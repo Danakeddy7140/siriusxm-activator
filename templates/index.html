@@ -2438,11 +2438,12 @@
             .then(data => {
                 if (data.results && data.results.length > 0) {
                     resultsDiv.innerHTML = data.results.map((track, idx) => `
-                        <div class="track-card" onclick="playTrack('${track.name.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}', ${idx})">
+                        <div class="track-card" onclick="playTrack('${track.name.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}', '${(track.preview_url || '').replace(/'/g, "\\'")}', ${idx})">
                             <div class="cover">🎵</div>
                             <div class="name">${track.name}</div>
                             <div class="artist">${track.artist}</div>
-                            <div style="color: #666; font-size: 11px; margin-top: 8px;">👥 ${track.listeners} listeners</div>
+                            <div style="color: #666; font-size: 11px; margin-top: 8px;">⭐ ${track.popularity}% Popular</div>
+                            ${track.external_urls ? `<a href="${track.external_urls}" target="_blank" style="color: #667eea; font-size: 11px; text-decoration: none; margin-top: 8px; display: block;">🎧 Listen on Spotify →</a>` : ''}
                         </div>
                     `).join('');
                 } else {
@@ -2454,7 +2455,7 @@
             });
         }
         
-        function playTrack(name, artist, index) {
+        function playTrack(name, artist, previewUrl, index) {
             document.getElementById('trackName').textContent = name;
             document.getElementById('trackArtist').textContent = artist;
             document.getElementById('musicPlayer').style.display = 'block';
@@ -2462,9 +2463,16 @@
             // Smooth scroll to player
             document.getElementById('musicPlayer').scrollIntoView({behavior: 'smooth'});
             
-            // Simulate track selection (for mobile-friendly experience)
+            // Load preview if available
             const audio = document.getElementById('audioPlayer');
-            audio.src = ''; // Can be extended with real audio URLs
+            if (previewUrl && previewUrl !== 'null') {
+                audio.src = previewUrl;
+                audio.play().catch(() => {
+                    console.log('Preview not available for this track');
+                });
+            } else {
+                audio.src = '';
+            }
             
             // Show visual feedback
             const tracks = document.querySelectorAll('.track-card');
