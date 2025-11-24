@@ -2716,10 +2716,14 @@
                 audio.crossOrigin = 'anonymous';
                 
                 let audioUrl;
-                if (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit')) {
-                    audioUrl = '/audio-proxy?url=' + encodeURIComponent('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+                const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                
+                if (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit') || window.location.hostname.includes('127.0.0.1')) {
+                    audioUrl = '/audio-proxy?url=' + encodeURIComponent(testUrl);
+                } else if (window.location.hostname.includes('github.io')) {
+                    audioUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(testUrl);
                 } else {
-                    audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                    audioUrl = testUrl;
                 }
                 
                 audio.volume = 1.0;
