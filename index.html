@@ -2437,15 +2437,22 @@
             .then(r => r.json())
             .then(data => {
                 if (data.results && data.results.length > 0) {
-                    resultsDiv.innerHTML = data.results.map((track, idx) => `
-                        <div class="track-card" onclick="playTrack('${track.name.replace(/'/g, "\\'")}', '${track.artist.replace(/'/g, "\\'")}', '${(track.preview_url || '').replace(/'/g, "\\'")}', ${idx})">
-                            <div class="cover">🎵</div>
-                            <div class="name">${track.name}</div>
-                            <div class="artist">${track.artist}</div>
-                            <div style="color: #666; font-size: 11px; margin-top: 8px;">⭐ ${track.popularity}% Popular</div>
-                            ${track.external_urls ? `<a href="${track.external_urls}" target="_blank" style="color: #667eea; font-size: 11px; text-decoration: none; margin-top: 8px; display: block;">🎧 Listen on Spotify →</a>` : ''}
-                        </div>
-                    `).join('');
+                    resultsDiv.innerHTML = data.results.map((track, idx) => {
+                        const safeName = (track.name || '').replace(/[<>"]/g, (c) => ({'<':'&lt;', '>':'&gt;', '"':'&quot;'}[c] || c));
+                        const safeArtist = (track.artist || '').replace(/[<>"]/g, (c) => ({'<':'&lt;', '>':'&gt;', '"':'&quot;'}[c] || c));
+                        const safePreview = track.preview_url || '';
+                        const safeSpotifyUrl = (track.external_urls || '').replace(/"/g, '&quot;');
+                        
+                        return `
+                            <div class="track-card" data-track='${JSON.stringify({name: track.name, artist: track.artist, preview: safePreview, idx: idx})}' onclick="playTrackFromCard(this)">
+                                <div class="cover">🎵</div>
+                                <div class="name">${safeName}</div>
+                                <div class="artist">${safeArtist}</div>
+                                <div style="color: #666; font-size: 11px; margin-top: 8px;">⭐ ${track.popularity || 0}% Popular</div>
+                                ${safeSpotifyUrl ? `<a href="${safeSpotifyUrl}" target="_blank" onclick="event.stopPropagation();" style="color: #667eea; font-size: 11px; text-decoration: none; margin-top: 8px; display: block;">🎧 Listen on Spotify →</a>` : ''}
+                            </div>
+                        `;
+                    }).join('');
                 } else {
                     resultsDiv.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">No results found. Try a different search.</div>';
                 }
@@ -2455,29 +2462,49 @@
             });
         }
         
-        function playTrack(name, artist, previewUrl, index) {
-            document.getElementById('trackName').textContent = name;
-            document.getElementById('trackArtist').textContent = artist;
-            document.getElementById('musicPlayer').style.display = 'block';
-            
-            // Smooth scroll to player
-            document.getElementById('musicPlayer').scrollIntoView({behavior: 'smooth'});
-            
-            // Load preview if available
-            const audio = document.getElementById('audioPlayer');
-            if (previewUrl && previewUrl !== 'null') {
-                audio.src = previewUrl;
-                audio.play().catch(() => {
-                    console.log('Preview not available for this track');
-                });
-            } else {
-                audio.src = '';
+        function playTrackFromCard(element) {
+            try {
+                const trackData = JSON.parse(element.dataset.track);
+                const name = trackData.name || 'Unknown Track';
+                const artist = trackData.artist || 'Unknown Artist';
+                const previewUrl = trackData.preview || '';
+                const index = trackData.idx || 0;
+                
+                playTrack(name, artist, previewUrl, index);
+                
+                // Show visual feedback
+                const tracks = document.querySelectorAll('.track-card');
+                tracks.forEach(t => t.style.opacity = '0.6');
+                element.style.opacity = '1';
+            } catch (e) {
+                console.error('Error loading track:', e);
             }
-            
-            // Show visual feedback
-            const tracks = document.querySelectorAll('.track-card');
-            tracks.forEach(t => t.style.opacity = '0.6');
-            tracks[index].style.opacity = '1';
+        }
+        
+        function playTrack(name, artist, previewUrl, index) {
+            try {
+                document.getElementById('trackName').textContent = name;
+                document.getElementById('trackArtist').textContent = artist;
+                document.getElementById('musicPlayer').style.display = 'block';
+                
+                // Smooth scroll to player
+                document.getElementById('musicPlayer').scrollIntoView({behavior: 'smooth'});
+                
+                // Load preview if available
+                const audio = document.getElementById('audioPlayer');
+                if (previewUrl && previewUrl.startsWith('http')) {
+                    audio.src = previewUrl;
+                    // Auto-play
+                    audio.play().catch((err) => {
+                        console.log('Preview unavailable:', err.message);
+                    });
+                } else {
+                    audio.src = '';
+                    console.log('No preview available for this track');
+                }
+            } catch (e) {
+                console.error('Error playing track:', e);
+            }
         }
         
         // Allow Enter key in search box
