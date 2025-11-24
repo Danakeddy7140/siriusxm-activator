@@ -2181,7 +2181,7 @@
             <h2>🔐 Developer Access</h2>
             <p>Enter password to access developer tools</p>
             <form onsubmit="checkPassword(); return false;">
-                <input type="password" id="passwordInput" class="password-input" placeholder="••••••" onkeypress="if(event.key==='Enter') checkPassword()">
+                <input type="password" id="passwordInput" class="password-input" placeholder="••••••" autocomplete="new-password" onkeypress="if(event.key==='Enter') checkPassword()">
                 <button type="submit">Unlock</button>
             </form>
         </div>
