@@ -1954,18 +1954,6 @@
                         fillOpacity: 0.8
                     }).addTo(map).bindPopup('📍 You Are Here');
                     
-                    
-                    // Draw line between user and satellite
-                    L.polyline([
-                        [lat, lon],
-                        [satLat, satLon]
-                    ], {
-                        color: '#667eea',
-                        weight: 2,
-                        opacity: 0.5,
-                        dashArray: '5, 5'
-                    }).addTo(map);
-                    
                     // Update info box
                     const getState = (lat) => {
                         const states = {
