@@ -495,52 +495,68 @@ def get_code():
 
 @app.route('/stream-convert', methods=['GET'])
 def stream_convert():
-    """Convert any audio stream format to MP3 on-the-fly using FFmpeg"""
+    """Stream audio through FFmpeg - continuous chunking for live playback"""
     try:
         url = request.args.get('url')
         if not url:
             return jsonify({'error': 'No URL provided'}), 400
         
-        # Use FFmpeg to convert stream to MP3 in real-time
-        # This handles Icecast, HLS, M3U, and other formats automatically
+        # FFmpeg command for CONTINUOUS streaming MP3
+        # -re: Read at input frame rate (don't buffer entire file)
+        # -fflags: Use nobuffer flag for minimal buffering
+        # -flags: Low_delay for immediate output
         cmd = [
             'ffmpeg',
-            '-i', url,
-            '-c:a', 'libmp3lame',      # MP3 codec
-            '-b:a', '128k',             # 128kbps quality
-            '-f', 'mp3',                # Output format
-            '-loglevel', 'quiet',       # No logs
-            'pipe:1'                    # Output to stdout
+            '-reconnect', '1',          # Reconnect if stream dies
+            '-reconnect_streamed', '1', # Reconnect streamed input
+            '-reconnect_delay_max', '5', # Max 5 second reconnect delay
+            '-i', url,                  # Input stream URL
+            '-c:a', 'libmp3lame',       # MP3 codec
+            '-q:a', '5',                # Quality (5 = ~128kbps)
+            '-f', 'mp3',                # Output format MP3
+            '-loglevel', 'quiet',       # No FFmpeg logs
+            '-fflags', 'nobuffer',      # No buffering
+            '-flags', 'low_delay',      # Low latency
+            'pipe:1'                    # Output to stdout (continuous)
         ]
         
-        # Start FFmpeg process
+        # Start FFmpeg process - streams continuously
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            stdin=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
+            stdin=subprocess.DEVNULL,
+            bufsize=0
         )
         
-        # Stream the output
+        # Continuously yield chunks as they arrive from FFmpeg
         def generate():
             try:
+                # Read and yield chunks continuously
+                # Audio element will play these chunks as they arrive
+                # No gap - continuous streaming
                 while True:
-                    chunk = process.stdout.read(8192)
+                    chunk = process.stdout.read(4096)
                     if not chunk:
                         break
                     yield chunk
             except Exception as e:
                 pass
             finally:
-                process.terminate()
+                try:
+                    process.terminate()
+                    process.wait(timeout=2)
+                except:
+                    process.kill()
         
         return Response(
             generate(),
             mimetype='audio/mpeg',
             headers={
                 'Access-Control-Allow-Origin': '*',
-                'Cache-Control': 'no-cache',
-                'Content-Type': 'audio/mpeg'
+                'Cache-Control': 'no-cache, no-store',
+                'Content-Type': 'audio/mpeg',
+                'Transfer-Encoding': 'chunked'
             }
         )
         
