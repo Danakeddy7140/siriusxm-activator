@@ -2691,7 +2691,8 @@
                 document.querySelectorAll('.channel-btn').forEach((btn, i) => {
                     btn.classList.toggle('active', i === idx);
                 });
-                if (!isPlaying) togglePlay();
+                // Always play the selected channel, whether already playing or not
+                playCurrentChannel();
             } catch (e) {
             }
         }
