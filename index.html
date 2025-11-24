@@ -1866,7 +1866,7 @@
     </style>
 </head>
 <body>
-    <audio id="siriusAudio" preload="none" crossorigin="anonymous" style="display: none;">
+    <audio id="siriusAudio" preload="none" crossorigin="anonymous" loop style="display: none;">
         <source id="audioSource" type="audio/mpeg">
     </audio>
     
@@ -2772,6 +2772,7 @@
                 }
                 
                 audio.volume = 1.0;
+                audio.loop = true;
                 
                 fetch(audioUrl, { 
                     mode: 'cors',
