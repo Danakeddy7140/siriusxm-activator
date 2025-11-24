@@ -35,9 +35,6 @@ class ActivationManager:
         self.seq = None
         self.session = requests.Session()
         self.session.timeout = 30
-        
-    def log(self, message):
-        return message
 
     def login(self):
         try:
@@ -58,10 +55,14 @@ class ActivationManager:
                     "X-Voltmx-App-Key": "67cfe0220c41a54cb4e768723ad56b41",
                     "X-Voltmx-ReportingParams": urllib.parse.quote(paramsStr, safe='$:,'),
                 },
+                verify=True, timeout=30
             )
-            self.auth_token = response.json().get('claims_token').get('value')
-            return True
-        except Exception as e:
+            claims_token = response.json().get('claims_token')
+            if not claims_token:
+                return False
+            self.auth_token = claims_token.get('value')
+            return bool(self.auth_token)
+        except (requests.RequestException, KeyError, ValueError, AttributeError):
             return False
 
     def versionControl(self):
@@ -89,9 +90,10 @@ class ActivationManager:
                     "deviceVersion": DEVICE_IOS_VERSION,
                     "deviceType": "",
                 },
+                verify=True, timeout=30
             )
             return True
-        except:
+        except (requests.RequestException, ValueError):
             return False
 
     def getProperties(self):
@@ -111,9 +113,10 @@ class ActivationManager:
                     "X-Voltmx-Authorization": self.auth_token,
                     "X-Voltmx-ReportingParams": urllib.parse.quote(paramsStr, safe='$:,'),
                 },
+                verify=True, timeout=30
             )
             return True
-        except:
+        except (requests.RequestException, ValueError):
             return False
 
     def update_1_vin(self):
@@ -141,10 +144,15 @@ class ActivationManager:
                     "provisionType": "activate",
                     "vin": self.radio_id_input,
                 },
+                verify=True, timeout=30
             )
-            self.seq = response.json().get('seqValue')
-            return True
-        except:
+            result = response.json()
+            seq_val = result.get('seqValue')
+            if seq_val:
+                self.seq = seq_val
+                return True
+            return False
+        except (requests.RequestException, ValueError, KeyError):
             return False
 
     def get_vehicle_data(self):
@@ -165,6 +173,7 @@ class ActivationManager:
                     "X-Voltmx-ReportingParams": urllib.parse.quote(paramsStr, safe='$:,'),
                 },
                 data={"vin": self.radio_id_input},
+                verify=True, timeout=30
             )
             result = response.json()
             if result.get('errorMessage') != "":
@@ -176,9 +185,9 @@ class ActivationManager:
                 vehicle_info = json.loads(vehicle_data)
                 oem = vehicle_info.get('getvehicleandtainfo', {}).get('oem', 'Unknown')
                 return radio_id, oem
-            except:
+            except (ValueError, KeyError, AttributeError):
                 return radio_id, None
-        except:
+        except (requests.RequestException, ValueError, KeyError):
             return None, None
 
     def get_crm(self):
@@ -199,6 +208,7 @@ class ActivationManager:
                     "X-Voltmx-ReportingParams": urllib.parse.quote(paramsStr, safe='$:,'),
                 },
                 data={"seqVal": self.seq, "deviceId": self.radio_id_input},
+                verify=True, timeout=30
             )
             result = response.json()
             if result.get('resultCode') == 'SUCCESS':
@@ -206,7 +216,7 @@ class ActivationManager:
                 if plan_list:
                     return plan_list[0].get('planId', 'Unknown')
             return None
-        except:
+        except (requests.RequestException, ValueError, KeyError, IndexError, TypeError):
             return None
 
     def blocklist(self):
@@ -227,8 +237,9 @@ class ActivationManager:
                     "X-Voltmx-ReportingParams": urllib.parse.quote(paramsStr, safe='$:,'),
                 },
                 data={"deviceId": self.uuid4},
+                verify=True, timeout=30
             )
-        except:
+        except (requests.RequestException, ValueError):
             pass
 
     def create_account(self):
@@ -387,32 +398,41 @@ def save_code():
     """Save code changes from developer section"""
     try:
         data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
         code = data.get('code', '')
         code_type = data.get('type', 'html')
+        if not isinstance(code, str) or len(code) == 0:
+            return jsonify({'success': False, 'message': 'Empty code'}), 400
+        if code_type not in ['html', 'js', 'css', 'python']:
+            return jsonify({'success': False, 'message': 'Invalid code type'}), 400
         
-        # Save to temporary session storage (in production, save to database)
         session_file = f'/tmp/code_{code_type}_{uuid.uuid4().hex[:8]}.txt'
         with open(session_file, 'w') as f:
             f.write(code)
         
         return jsonify({'success': True, 'message': 'Code saved', 'file': session_file})
-    except:
-        return jsonify({'success': False}), 500
+    except (IOError, OSError, ValueError, TypeError) as e:
+        return jsonify({'success': False, 'message': 'Failed to save code'}), 500
 
 @app.route('/audio-proxy')
 def audio_proxy():
     """Proxy audio streams - bypass CORS and content issues"""
     try:
         stream_url = request.args.get('url', '').strip()
-        if not stream_url:
-            return 'Invalid URL', 400
+        if not stream_url or not (stream_url.startswith('http://') or stream_url.startswith('https://')):
+            return jsonify({'error': 'Invalid URL'}), 400
         
-        response = requests.get(stream_url, stream=True, timeout=30, headers={'User-Agent': 'Mozilla/5.0'})
+        response = requests.get(stream_url, stream=True, timeout=30, headers={'User-Agent': 'Mozilla/5.0'}, verify=True)
+        response.raise_for_status()
         
         def generate():
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    yield chunk
+            try:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        yield chunk
+            except (requests.RequestException, IOError):
+                pass
         
         return generate(), 200, {
             'Content-Type': 'audio/mpeg',
@@ -420,8 +440,10 @@ def audio_proxy():
             'Cache-Control': 'no-cache',
             'Accept-Ranges': 'bytes'
         }
+    except requests.RequestException as e:
+        return jsonify({'error': 'Failed to fetch audio stream'}), 502
     except Exception as e:
-        return '', 500
+        return jsonify({'error': 'Stream error'}), 500
 
 @app.route('/activate', methods=['POST'])
 def activate():
@@ -447,43 +469,42 @@ def activate():
 def ai_search():
     """AI assistant with web search capability"""
     data = request.json
+    if not data:
+        return jsonify({'response': 'Invalid request'}), 400
+    
     query = data.get('query', '').strip()
     
-    if not query:
-        return jsonify({'response': 'Please ask me something!'}), 400
+    if not query or len(query) > 500:
+        return jsonify({'response': 'Please ask me something (under 500 characters)!'}), 400
     
     try:
-        # Try to fetch search results from DuckDuckGo Instant Answer API
         search_url = f"https://api.duckduckgo.com/?q={urllib.parse.quote(query)}&format=json"
-        search_response = requests.get(search_url, timeout=5)
+        search_response = requests.get(search_url, timeout=5, verify=True)
+        search_response.raise_for_status()
         search_data = search_response.json()
         
-        # Extract answer from search results
         answer = search_data.get('Answer', '')
         abstract = search_data.get('AbstractText', '')
         related = search_data.get('RelatedTopics', [])
         
-        # Construct response
         response_text = ""
-        if answer:
-            response_text = f"🔍 Found: {answer}"
-        elif abstract:
-            response_text = f"📚 Summary: {abstract}"
-        elif related and len(related) > 0:
-            # Show first related topic
+        if answer and isinstance(answer, str):
+            response_text = f"Found: {answer[:500]}"
+        elif abstract and isinstance(abstract, str):
+            response_text = f"Summary: {abstract[:500]}"
+        elif related and isinstance(related, list) and len(related) > 0:
             first_result = related[0]
             if isinstance(first_result, dict):
                 text = first_result.get('Text', '')
-                response_text = f"📖 Related: {text[:200]}"
+                if isinstance(text, str):
+                    response_text = f"Related: {text[:200]}"
         
-        # Fallback response if no search results
         if not response_text:
-            response_text = f"✨ Analyzing your question: '{query}'\n\nI found your question interesting! I can help you with:\n• Explanations and definitions\n• Technical help and coding\n• Information lookups\n• Problem solving\n\nFeel free to ask follow-up questions!"
+            response_text = f"Analyzing your question: '{query[:100]}'\n\nI found your question interesting! I can help you with:\n• Explanations and definitions\n• Technical help and coding\n• Information lookups\n• Problem solving\n\nFeel free to ask follow-up questions!"
         
         return jsonify({'response': response_text})
     
-    except Exception as e:
-        # Fallback: provide a helpful response without internet
+    except requests.RequestException:
         return jsonify({
             'response': f"✨ Processing your question: '{query}'\n\nI'm analyzing this and ready to help with explanations, coding questions, or information lookups. What would you like to know more about?"
         })
