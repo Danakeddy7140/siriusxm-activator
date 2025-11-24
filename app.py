@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 import requests
 import uuid
 import json
 import urllib.parse
 import time
+import subprocess
+import os
 
 app = Flask(__name__)
 
@@ -491,33 +493,57 @@ def get_code():
     except:
         return jsonify({'code': '// Error reading code'})
 
-@app.route('/stream-proxy', methods=['GET'])
-def stream_proxy():
-    """Proxy audio streams to bypass CORS and SSL issues"""
+@app.route('/stream-convert', methods=['GET'])
+def stream_convert():
+    """Convert any audio stream format to MP3 on-the-fly using FFmpeg"""
     try:
         url = request.args.get('url')
         if not url:
             return jsonify({'error': 'No URL provided'}), 400
         
-        # Fetch the stream
-        session = requests.Session()
-        session.headers.update({'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'})
-        response = session.get(url, stream=False, timeout=10, verify=False)
+        # Use FFmpeg to convert stream to MP3 in real-time
+        # This handles Icecast, HLS, M3U, and other formats automatically
+        cmd = [
+            'ffmpeg',
+            '-i', url,
+            '-c:a', 'libmp3lame',      # MP3 codec
+            '-b:a', '128k',             # 128kbps quality
+            '-f', 'mp3',                # Output format
+            '-loglevel', 'quiet',       # No logs
+            'pipe:1'                    # Output to stdout
+        ]
         
-        if response.status_code == 200:
-            # Return as audio stream with proper headers
-            return app.response_class(
-                response=response.content,
-                status=200,
-                headers={
-                    'Content-Type': response.headers.get('Content-Type', 'audio/mpeg'),
-                    'Access-Control-Allow-Origin': '*',
-                    'Cache-Control': 'no-cache'
-                }
-            )
-        else:
-            return jsonify({'error': f'Failed to fetch stream: {response.status_code}'}), response.status_code
-            
+        # Start FFmpeg process
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.DEVNULL
+        )
+        
+        # Stream the output
+        def generate():
+            try:
+                while True:
+                    chunk = process.stdout.read(8192)
+                    if not chunk:
+                        break
+                    yield chunk
+            except Exception as e:
+                pass
+            finally:
+                process.terminate()
+        
+        return Response(
+            generate(),
+            mimetype='audio/mpeg',
+            headers={
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'no-cache',
+                'Content-Type': 'audio/mpeg'
+            }
+        )
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
