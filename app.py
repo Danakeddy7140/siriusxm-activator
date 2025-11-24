@@ -34,7 +34,6 @@ class ActivationManager:
         self.auth_token = None
         self.seq = None
         self.session = requests.Session()
-        self.session.timeout = 30
 
     def login(self):
         try:
@@ -393,6 +392,10 @@ def index():
     resp.headers['Expires'] = '0'
     return resp
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
+
 @app.route('/save-code', methods=['POST'])
 def save_code():
     """Save code changes from developer section"""
@@ -447,7 +450,7 @@ def audio_proxy():
 
 @app.route('/activate', methods=['POST'])
 def activate():
-    data = request.json
+    data = request.json if request.json else {}
     vin = data.get('vin', '').upper().strip()
     
     if len(vin) == 17:
@@ -561,11 +564,12 @@ def stream_convert():
                 # Read and yield chunks continuously
                 # Audio element will play these chunks as they arrive
                 # No gap - continuous streaming
-                while True:
-                    chunk = process.stdout.read(4096)
-                    if not chunk:
-                        break
-                    yield chunk
+                if process.stdout:
+                    while True:
+                        chunk = process.stdout.read(4096)
+                        if not chunk:
+                            break
+                        yield chunk
             except Exception as e:
                 pass
             finally:
