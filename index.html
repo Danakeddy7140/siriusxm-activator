@@ -2833,7 +2833,6 @@
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) {
-                    console.error('❌ Web Audio API not supported');
                     return;
                 }
                 const ctx = new AudioContext();
@@ -2846,9 +2845,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
                 osc.start(ctx.currentTime);
                 osc.stop(ctx.currentTime + 0.5);
-                console.log('✅ Web Audio API test: Beep generated!');
             } catch (e) {
-                console.error('❌ Web Audio test failed:', e.message);
             }
         }
         
