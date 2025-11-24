@@ -2756,7 +2756,6 @@
                 audio.currentTime = 0;
                 
                 let audioUrl;
-                let isLiveStream = true;
                 
                 if (ch.url && ch.url !== '#') {
                     audioUrl = ch.url;
@@ -2773,39 +2772,33 @@
                 
                 audio.volume = 1.0;
                 audio.loop = true;
+                audio.crossOrigin = 'anonymous';
                 
-                fetch(audioUrl, { 
-                    mode: 'cors',
-                    credentials: 'omit',
-                    headers: { 'Accept': 'audio/mpeg' }
-                })
-                    .then(response => {
-                        if (!response.ok) throw new Error('HTTP ' + response.status);
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        const blobUrl = URL.createObjectURL(blob);
-                        const source = audio.querySelector('source');
-                        if (source) {
-                            source.src = blobUrl;
-                            source.type = blob.type || 'audio/mpeg';
-                        }
-                        audio.load();
-                        const playPromise = audio.play();
-                        if (playPromise && playPromise.catch) {
-                            return playPromise;
-                        }
-                        return Promise.resolve();
-                    })
-                    .then(() => {
-                        isPlaying = true;
-                        updatePlayButton();
-                        setupMediaSession(ch.name);
-                    })
-                    .catch(err => {
-                        isPlaying = false;
-                        updatePlayButton();
-                    });
+                // Set src directly for streaming (don't use blob for continuous streams)
+                const source = audio.querySelector('source');
+                if (source) {
+                    source.src = audioUrl;
+                    source.type = 'audio/mpeg';
+                }
+                audio.load();
+                
+                const playPromise = audio.play();
+                if (playPromise && playPromise.catch) {
+                    playPromise
+                        .then(() => {
+                            isPlaying = true;
+                            updatePlayButton();
+                            setupMediaSession(ch.name);
+                        })
+                        .catch(err => {
+                            isPlaying = false;
+                            updatePlayButton();
+                        });
+                } else {
+                    isPlaying = true;
+                    updatePlayButton();
+                    setupMediaSession(ch.name);
+                }
             } catch (e) {
                 isPlaying = false;
             }
