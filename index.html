@@ -2683,39 +2683,39 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Direct MP3 streams - tested and working
+            // Radio streams - proxied through backend to fix HTTPS/HTTP mixed content
             const streamUrls = {
-                'XM 2': 'http://listen.181fm.com:8000/181-hits',
-                'XM 3': 'http://listen.181fm.com:8000/181-pop',
-                'XM 5': 'http://listen.181fm.com:8000/181-country',
-                'XM 6': 'http://listen.181fm.com:8000/181-rock',
-                'XM 7': 'http://listen.181fm.com:8000/181-beatles',
-                'XM 8': 'http://listen.181fm.com:8000/181-80s',
-                'XM 9': 'http://listen.181fm.com:8000/181-90s',
-                'XM 10': 'http://listen.181fm.com:8000/181-hits',
-                'XM 11': 'http://listen.181fm.com:8000/181-pop',
-                'XM 13': 'http://listen.181fm.com:8000/181-country',
-                'XM 14': 'http://listen.181fm.com:8000/181-pop',
-                'XM 15': 'http://listen.181fm.com:8000/181-hiphop',
-                'XM 16': 'http://listen.181fm.com:8000/181-pop',
-                'XM 20': 'http://listen.181fm.com:8000/181-hardrock',
-                'XM 34': 'http://listen.181fm.com:8000/181-alternative',
-                'XM 42': 'http://listen.181fm.com:8000/181-rock',
-                'XM 44': 'http://listen.181fm.com:8000/181-hiphop',
-                'XM 45': 'http://listen.181fm.com:8000/181-hiphop',
-                'XM 48': 'http://listen.181fm.com:8000/181-hiphop',
-                'XM 51': 'http://listen.181fm.com:8000/181-edm',
-                'XM 53': 'http://listen.181fm.com:8000/181-edm',
-                'XM 58': 'http://listen.181fm.com:8000/181-country',
-                'XM 60': 'http://listen.181fm.com:8000/181-country',
-                'XM 65': 'http://listen.181fm.com:8000/181-gospel',
-                'XM 69': 'http://listen.181fm.com:8000/181-alternative',
-                'XM 70': 'http://listen.181fm.com:8000/181-chillout',
-                'XM 71': 'http://listen.181fm.com:8000/181-rbsoulfm',
-                'XM 73': 'http://listen.181fm.com:8000/181-jazz'
+                'XM 2': '/audio-proxy?url=http://listen.181fm.com:8000/181-hits',
+                'XM 3': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
+                'XM 5': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
+                'XM 6': '/audio-proxy?url=http://listen.181fm.com:8000/181-rock',
+                'XM 7': '/audio-proxy?url=http://listen.181fm.com:8000/181-beatles',
+                'XM 8': '/audio-proxy?url=http://listen.181fm.com:8000/181-80s',
+                'XM 9': '/audio-proxy?url=http://listen.181fm.com:8000/181-90s',
+                'XM 10': '/audio-proxy?url=http://listen.181fm.com:8000/181-hits',
+                'XM 11': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
+                'XM 13': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
+                'XM 14': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
+                'XM 15': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
+                'XM 16': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
+                'XM 20': '/audio-proxy?url=http://listen.181fm.com:8000/181-hardrock',
+                'XM 34': '/audio-proxy?url=http://listen.181fm.com:8000/181-alternative',
+                'XM 42': '/audio-proxy?url=http://listen.181fm.com:8000/181-rock',
+                'XM 44': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
+                'XM 45': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
+                'XM 48': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
+                'XM 51': '/audio-proxy?url=http://listen.181fm.com:8000/181-edm',
+                'XM 53': '/audio-proxy?url=http://listen.181fm.com:8000/181-edm',
+                'XM 58': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
+                'XM 60': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
+                'XM 65': '/audio-proxy?url=http://listen.181fm.com:8000/181-gospel',
+                'XM 69': '/audio-proxy?url=http://listen.181fm.com:8000/181-alternative',
+                'XM 70': '/audio-proxy?url=http://listen.181fm.com:8000/181-chillout',
+                'XM 71': '/audio-proxy?url=http://listen.181fm.com:8000/181-rbsoulfm',
+                'XM 73': '/audio-proxy?url=http://listen.181fm.com:8000/181-jazz'
             };
             
-            const streamUrl = streamUrls[ch.number] || 'http://listen.181fm.com:8000/181-hits';
+            const streamUrl = streamUrls[ch.number] || '/audio-proxy?url=http://listen.181fm.com:8000/181-hits';
             
             audioElement.volume = 1.0;
             audioElement.src = streamUrl;
