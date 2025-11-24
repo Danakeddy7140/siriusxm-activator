@@ -1866,6 +1866,8 @@
     </style>
 </head>
 <body>
+    <audio id="siriusAudio" preload="auto" crossorigin="anonymous"></audio>
+    
     <div class="background-orbs">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -2528,8 +2530,7 @@
         // ========== REAL AUDIO STREAMING PLAYER ==========
         let currentChannelIndex = 0;
         let isPlaying = false;
-        let audioElement = new Audio();
-        audioElement.crossOrigin = 'anonymous';
+        let audioElement = document.getElementById('siriusAudio');
         let hls = null;
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let channels = [];
@@ -2695,18 +2696,13 @@
                     return;
                 }
                 
-                try {
-                    audioElement.pause();
-                    audioElement.currentTime = 0;
-                    audioElement.src = '';
-                } catch (e) {
-                    audioElement = new Audio();
-                }
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                audioElement.src = '';
                 
                 const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
                 
                 audioElement.volume = 1.0;
-                audioElement.crossOrigin = 'anonymous';
                 audioElement.src = testUrl;
                 
                 const playPromise = audioElement.play();
