@@ -559,7 +559,16 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-size: 14px;
-            z-index: 10;
+            z-index: 400;
+        }
+        
+        .map-container .leaflet-control {
+            z-index: 500 !important;
+        }
+        
+        .map-container .leaflet-top,
+        .map-container .leaflet-bottom {
+            z-index: 500 !important;
         }
         
         .legend-item {
