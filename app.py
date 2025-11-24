@@ -375,7 +375,12 @@ class ActivationManager:
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    from flask import make_response
+    resp = make_response(render_template('index.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
 
 @app.route('/save-code', methods=['POST'])
 def save_code():
