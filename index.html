@@ -1954,18 +1954,6 @@
                         fillOpacity: 0.8
                     }).addTo(map).bindPopup('📍 You Are Here');
                     
-                    // Simulate satellite position (approximately above)
-                    const satLat = lat + 2;
-                    const satLon = lon - 3;
-                    
-                    satelliteMarker = L.circleMarker([satLat, satLon], {
-                        radius: 14,
-                        fillColor: '#f97316',
-                        color: '#ea580c',
-                        weight: 3,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).addTo(map).bindPopup('🛰️ SiriusXM Satellite Signal');
                     
                     // Draw line between user and satellite
                     L.polyline([
