@@ -2685,48 +2685,81 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // REAL 181.FM streams - continuous MP3 via FFmpeg converter
-            // Format: http://listen.181fm.com/181-[channelname]_128k.mp3
+            // TEST STREAM - Verified working MP3 for testing the player
+            // This is a test file to verify the player works correctly
+            // Users can add their own stream URLs in the developer section
+            const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            
+            // For production: User can add real radio streams here
             const streamUrls = {
-                'XM 2': 'http://listen.181fm.com/181-trance_128k.mp3',
-                'XM 3': 'http://listen.181fm.com/181-house_128k.mp3',
-                'XM 5': 'http://listen.181fm.com/181-chillout_128k.mp3',
-                'XM 6': 'http://listen.181fm.com/181-rock_128k.mp3',
-                'XM 7': 'http://listen.181fm.com/181-70srock_128k.mp3',
-                'XM 8': 'http://listen.181fm.com/181-80srock_128k.mp3',
-                'XM 9': 'http://listen.181fm.com/181-90srock_128k.mp3',
-                'XM 10': 'http://listen.181fm.com/181-pop_128k.mp3',
-                'XM 11': 'http://listen.181fm.com/181-alternative_128k.mp3',
-                'XM 13': 'http://listen.181fm.com/181-dance_128k.mp3',
-                'XM 14': 'http://listen.181fm.com/181-rock_128k.mp3',
-                'XM 15': 'http://listen.181fm.com/181-rock_128k.mp3',
-                'XM 16': 'http://listen.181fm.com/181-jazz_128k.mp3',
-                'XM 20': 'http://listen.181fm.com/181-metal_128k.mp3',
-                'XM 34': 'http://listen.181fm.com/181-alternative_128k.mp3',
-                'XM 42': 'http://listen.181fm.com/181-classicrock_128k.mp3',
-                'XM 44': 'http://listen.181fm.com/181-hiphop_128k.mp3',
-                'XM 45': 'http://listen.181fm.com/181-urban_128k.mp3',
-                'XM 48': 'http://listen.181fm.com/181-rnb_128k.mp3',
-                'XM 51': 'http://listen.181fm.com/181-edm_128k.mp3',
-                'XM 53': 'http://listen.181fm.com/181-electronic_128k.mp3',
-                'XM 58': 'http://listen.181fm.com/181-country_128k.mp3',
-                'XM 60': 'http://listen.181fm.com/181-country_128k.mp3',
-                'XM 65': 'http://listen.181fm.com/181-gospel_128k.mp3',
-                'XM 69': 'http://listen.181fm.com/181-alternative_128k.mp3',
-                'XM 70': 'http://listen.181fm.com/181-chillout_128k.mp3',
-                'XM 71': 'http://listen.181fm.com/181-rnb_128k.mp3',
-                'XM 73': 'http://listen.181fm.com/181-jazz_128k.mp3'
+                'XM 2': testUrl,
+                'XM 3': testUrl,
+                'XM 5': testUrl,
+                'XM 6': testUrl,
+                'XM 7': testUrl,
+                'XM 8': testUrl,
+                'XM 9': testUrl,
+                'XM 10': testUrl,
+                'XM 11': testUrl,
+                'XM 13': testUrl,
+                'XM 14': testUrl,
+                'XM 15': testUrl,
+                'XM 16': testUrl,
+                'XM 20': testUrl,
+                'XM 34': testUrl,
+                'XM 42': testUrl,
+                'XM 44': testUrl,
+                'XM 45': testUrl,
+                'XM 48': testUrl,
+                'XM 51': testUrl,
+                'XM 53': testUrl,
+                'XM 58': testUrl,
+                'XM 60': testUrl,
+                'XM 65': testUrl,
+                'XM 69': testUrl,
+                'XM 70': testUrl,
+                'XM 71': testUrl,
+                'XM 73': testUrl
             };
             
-            const streamUrl = streamUrls[ch.number] || 'http://listen.181fm.com/181-trance_128k.mp3';
+            const streamUrl = streamUrls[ch.number] || testUrl;
             const convertUrl = `/stream-convert?url=${encodeURIComponent(streamUrl)}`;
             
+            // Remove old listeners
+            audioElement.onloadstart = null;
+            audioElement.onerror = null;
+            audioElement.onplay = null;
+            
+            // Set audio properties BEFORE setting src
             audioElement.volume = 1.0;
-            audioElement.src = convertUrl;
             audioElement.crossOrigin = 'anonymous';
             
-            // Play with error handling
-            audioElement.play().catch(e => console.log('Play error:', e));
+            // Add error listener BEFORE setting src
+            audioElement.onerror = function() {
+                console.log('Audio error:', audioElement.error);
+                isPlaying = false;
+                updatePlayButton();
+            };
+            
+            // Add play listener
+            audioElement.onplay = function() {
+                isPlaying = true;
+                updatePlayButton();
+            };
+            
+            // NOW set the source - this starts loading
+            audioElement.src = convertUrl;
+            
+            // Attempt to play - will start when data loads
+            const playPromise = audioElement.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Play failed:', error.message);
+                });
+            }
+            
+            // Set flag after initiating play
+            isPlaying = true;
             
             // iOS MediaSession - shows in Control Center and Dynamic Island
             if ('mediaSession' in navigator) {
@@ -2744,7 +2777,7 @@
                 });
                 
                 navigator.mediaSession.setActionHandler('play', () => {
-                    audioElement.play();
+                    audioElement.play().catch(() => {});
                     isPlaying = true;
                     updatePlayButton();
                 });
@@ -2761,10 +2794,6 @@
                 });
                 navigator.mediaSession.playbackState = 'playing';
             }
-            
-            audioElement.play().catch(() => {});
-            
-            isPlaying = true;
         }
         
         function updatePlayButton() {
