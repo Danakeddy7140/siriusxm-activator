@@ -2442,14 +2442,17 @@
                         const safeArtist = (track.artist || '').replace(/[<>"]/g, (c) => ({'<':'&lt;', '>':'&gt;', '"':'&quot;'}[c] || c));
                         const safePreview = track.preview_url || '';
                         const safeSpotifyUrl = (track.external_urls || '').replace(/"/g, '&quot;');
+                        const resultType = track.type || '🎵 Track';
+                        const isTrack = resultType.includes('Track');
                         
                         return `
-                            <div class="track-card" data-track='${JSON.stringify({name: track.name, artist: track.artist, preview: safePreview, idx: idx})}' onclick="playTrackFromCard(this)">
-                                <div class="cover">🎵</div>
+                            <div class="track-card" data-track='${JSON.stringify({name: track.name, artist: track.artist, preview: safePreview, idx: idx})}' onclick="${isTrack ? "playTrackFromCard(this)" : "window.open('" + safeSpotifyUrl + "', '_blank')"}">
+                                <div class="cover">${isTrack ? '🎵' : resultType.includes('Artist') ? '👤' : '💿'}</div>
                                 <div class="name">${safeName}</div>
                                 <div class="artist">${safeArtist}</div>
-                                <div style="color: #666; font-size: 11px; margin-top: 8px;">⭐ ${track.popularity || 0}% Popular</div>
-                                ${safeSpotifyUrl ? `<a href="${safeSpotifyUrl}" target="_blank" onclick="event.stopPropagation();" style="color: #667eea; font-size: 11px; text-decoration: none; margin-top: 8px; display: block;">🎧 Listen on Spotify →</a>` : ''}
+                                <div style="color: #667eea; font-size: 11px; margin-top: 8px; font-weight: 600;">${resultType}</div>
+                                ${track.popularity > 0 ? `<div style="color: #666; font-size: 11px; margin-top: 4px;">⭐ ${track.popularity}% Popular</div>` : ''}
+                                ${safeSpotifyUrl ? `<a href="${safeSpotifyUrl}" target="_blank" onclick="event.stopPropagation();" style="color: #667eea; font-size: 11px; text-decoration: none; margin-top: 8px; display: block;">🎧 Open on Spotify →</a>` : ''}
                             </div>
                         `;
                     }).join('');
