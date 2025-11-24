@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SiriusXM">
     <title>SiriusXM Radio Activator</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <style>
         * {
@@ -2529,6 +2530,7 @@
         let isPlaying = false;
         let audioElement = new Audio();
         audioElement.crossOrigin = 'anonymous';
+        let hls = null;
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let channels = [];
         let isLoadingChannels = false;
@@ -2683,42 +2685,55 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Radio streams - TEST VERSION
+            // Live radio streams - using HLS.js for streaming support
             const streamUrls = {
-                'XM 2': '/audio-proxy?url=https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                'XM 3': 'https://stream.radiotunes.com/popnow',
-                'XM 5': 'https://stream.radiotunes.com/country',
-                'XM 6': 'https://stream.radiotunes.com/poprock',
-                'XM 7': 'https://stream.radiotunes.com/70s',
-                'XM 8': 'https://stream.radiotunes.com/80s',
-                'XM 9': 'https://stream.radiotunes.com/90s',
-                'XM 10': 'https://stream.radiotunes.com/pop2000s',
-                'XM 11': 'https://stream.radiotunes.com/popnow',
-                'XM 13': 'https://stream.radiotunes.com/country',
-                'XM 14': 'https://stream.radiotunes.com/popnow',
-                'XM 15': 'https://stream.radiotunes.com/hiphop',
-                'XM 16': 'https://stream.radiotunes.com/softpop',
-                'XM 20': 'https://stream.radiotunes.com/rock',
-                'XM 34': 'https://stream.radiotunes.com/alternative',
-                'XM 42': 'https://stream.radiotunes.com/rock',
-                'XM 44': 'https://stream.radiotunes.com/hiphop',
-                'XM 45': 'https://stream.radiotunes.com/hiphopclassics',
-                'XM 48': 'https://stream.radiotunes.com/urban',
-                'XM 51': 'https://stream.radiotunes.com/edm',
-                'XM 53': 'https://stream.radiotunes.com/electronic',
-                'XM 58': 'https://stream.radiotunes.com/country',
-                'XM 60': 'https://stream.radiotunes.com/country',
-                'XM 65': 'https://stream.radiotunes.com/gospel',
-                'XM 69': 'https://stream.radiotunes.com/alternative',
-                'XM 70': 'https://stream.radiotunes.com/chillout',
-                'XM 71': 'https://stream.radiotunes.com/rbsoulfunk',
-                'XM 73': 'https://stream.radiotunes.com/jazz'
+                'XM 2': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 3': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 5': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 6': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 7': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 8': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 9': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 10': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 11': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 13': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 14': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 15': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 16': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 20': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 34': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 42': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 44': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 45': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 48': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 51': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 53': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 58': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 60': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 65': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 69': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 70': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 71': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
+                'XM 73': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8'
             };
             
-            const streamUrl = streamUrls[ch.number] || '/audio-proxy?url=https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            const streamUrl = streamUrls[ch.number] || 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8';
             
             audioElement.volume = 1.0;
-            audioElement.src = streamUrl;
+            
+            // Use HLS.js for live streaming support
+            if (Hls.isSupported()) {
+                if (hls) hls.destroy();
+                hls = new Hls();
+                hls.loadSource(streamUrl);
+                hls.attachMedia(audioElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    audioElement.play().catch(e => console.log('Play error:', e));
+                });
+            } else if (audioElement.canPlayType('application/vnd.apple.mpegurl')) {
+                audioElement.src = streamUrl;
+                audioElement.play().catch(e => console.log('Play error:', e));
+            }
             
             // iOS MediaSession - shows in Control Center and Dynamic Island
             if ('mediaSession' in navigator) {
