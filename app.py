@@ -491,5 +491,35 @@ def get_code():
     except:
         return jsonify({'code': '// Error reading code'})
 
+@app.route('/stream-proxy', methods=['GET'])
+def stream_proxy():
+    """Proxy audio streams to bypass CORS and SSL issues"""
+    try:
+        url = request.args.get('url')
+        if not url:
+            return jsonify({'error': 'No URL provided'}), 400
+        
+        # Fetch the stream
+        session = requests.Session()
+        session.headers.update({'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'})
+        response = session.get(url, stream=False, timeout=10, verify=False)
+        
+        if response.status_code == 200:
+            # Return as audio stream with proper headers
+            return app.response_class(
+                response=response.content,
+                status=200,
+                headers={
+                    'Content-Type': response.headers.get('Content-Type', 'audio/mpeg'),
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'no-cache'
+                }
+            )
+        else:
+            return jsonify({'error': f'Failed to fetch stream: {response.status_code}'}), response.status_code
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
