@@ -425,19 +425,19 @@ def audio_proxy():
         channel = request.args.get('channel', '')
         stream_url = request.args.get('url', '').strip()
         
-        # Channel-based stream mapping - TRULY DIFFERENT AUDIO for each channel
-        # 10 completely different streams cycle across 100 channels
+        # Channel-based stream mapping - REAL QUALITY RADIO STREAMS
+        # Using professional public radio and SomaFM for live broadcast content
         channel_streams = {
-            'XM1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            'XM2': 'https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-78499-breathing-heavy/male_breathing_heavy_02.mp3',
-            'XM3': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-            'XM4': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-            'XM5': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-            'XM6': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
-            'XM7': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
-            'XM8': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-            'XM9': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
-            'XM10': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+            'XM1': 'https://ice.somafm.com/groovesalad',      # Groove Salad - Downtempo
+            'XM2': 'https://ice.somafm.com/secretagent',      # Secret Agent - Lounge
+            'XM3': 'https://ice.somafm.com/spacestation',     # Space Station - Ambient
+            'XM4': 'https://ice.somafm.com/dronezone',        # Drone Zone - Minimal
+            'XM5': 'https://ice.somafm.com/thetrip',          # The Trip - Progressive House
+            'XM6': 'https://ice.somafm.com/u80s',             # Underground 80s - Synth
+            'XM7': 'https://ice.somafm.com/lush',             # Lush - Vocal Electronic
+            'XM8': 'https://ice.somafm.com/poptron',          # PopTron - Indie Dance
+            'XM9': 'https://ice.somafm.com/beatblender',      # Beat Blender - Deep House
+            'XM10': 'https://ice.somafm.com/sonicuniverse',   # Sonic Universe - Jazz
         }
         
         # Use channel-mapped URL if available, cycle through 1-10
