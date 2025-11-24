@@ -375,6 +375,23 @@ class ActivationManager:
 def index():
     return render_template('index.html')
 
+@app.route('/save-code', methods=['POST'])
+def save_code():
+    """Save code changes from developer section"""
+    try:
+        data = request.json
+        code = data.get('code', '')
+        code_type = data.get('type', 'html')
+        
+        # Save to temporary session storage (in production, save to database)
+        session_file = f'/tmp/code_{code_type}_{uuid.uuid4().hex[:8]}.txt'
+        with open(session_file, 'w') as f:
+            f.write(code)
+        
+        return jsonify({'success': True, 'message': 'Code saved', 'file': session_file})
+    except:
+        return jsonify({'success': False}), 500
+
 @app.route('/audio-proxy')
 def audio_proxy():
     """Proxy audio streams to bypass HTTPS/HTTP mixed content issues on GitHub Pages"""
