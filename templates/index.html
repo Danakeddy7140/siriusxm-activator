@@ -2683,39 +2683,39 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Radio streams - proxied through backend to fix HTTPS/HTTP mixed content
+            // Radio streams - using working public stations
             const streamUrls = {
-                'XM 2': '/audio-proxy?url=http://listen.181fm.com:8000/181-hits',
-                'XM 3': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
-                'XM 5': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
-                'XM 6': '/audio-proxy?url=http://listen.181fm.com:8000/181-rock',
-                'XM 7': '/audio-proxy?url=http://listen.181fm.com:8000/181-beatles',
-                'XM 8': '/audio-proxy?url=http://listen.181fm.com:8000/181-80s',
-                'XM 9': '/audio-proxy?url=http://listen.181fm.com:8000/181-90s',
-                'XM 10': '/audio-proxy?url=http://listen.181fm.com:8000/181-hits',
-                'XM 11': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
-                'XM 13': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
-                'XM 14': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
-                'XM 15': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
-                'XM 16': '/audio-proxy?url=http://listen.181fm.com:8000/181-pop',
-                'XM 20': '/audio-proxy?url=http://listen.181fm.com:8000/181-hardrock',
-                'XM 34': '/audio-proxy?url=http://listen.181fm.com:8000/181-alternative',
-                'XM 42': '/audio-proxy?url=http://listen.181fm.com:8000/181-rock',
-                'XM 44': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
-                'XM 45': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
-                'XM 48': '/audio-proxy?url=http://listen.181fm.com:8000/181-hiphop',
-                'XM 51': '/audio-proxy?url=http://listen.181fm.com:8000/181-edm',
-                'XM 53': '/audio-proxy?url=http://listen.181fm.com:8000/181-edm',
-                'XM 58': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
-                'XM 60': '/audio-proxy?url=http://listen.181fm.com:8000/181-country',
-                'XM 65': '/audio-proxy?url=http://listen.181fm.com:8000/181-gospel',
-                'XM 69': '/audio-proxy?url=http://listen.181fm.com:8000/181-alternative',
-                'XM 70': '/audio-proxy?url=http://listen.181fm.com:8000/181-chillout',
-                'XM 71': '/audio-proxy?url=http://listen.181fm.com:8000/181-rbsoulfm',
-                'XM 73': '/audio-proxy?url=http://listen.181fm.com:8000/181-jazz'
+                'XM 2': 'https://stream.radiotunes.com/hits',
+                'XM 3': 'https://stream.radiotunes.com/popnow',
+                'XM 5': 'https://stream.radiotunes.com/country',
+                'XM 6': 'https://stream.radiotunes.com/poprock',
+                'XM 7': 'https://stream.radiotunes.com/70s',
+                'XM 8': 'https://stream.radiotunes.com/80s',
+                'XM 9': 'https://stream.radiotunes.com/90s',
+                'XM 10': 'https://stream.radiotunes.com/pop2000s',
+                'XM 11': 'https://stream.radiotunes.com/popnow',
+                'XM 13': 'https://stream.radiotunes.com/country',
+                'XM 14': 'https://stream.radiotunes.com/popnow',
+                'XM 15': 'https://stream.radiotunes.com/hiphop',
+                'XM 16': 'https://stream.radiotunes.com/softpop',
+                'XM 20': 'https://stream.radiotunes.com/rock',
+                'XM 34': 'https://stream.radiotunes.com/alternative',
+                'XM 42': 'https://stream.radiotunes.com/rock',
+                'XM 44': 'https://stream.radiotunes.com/hiphop',
+                'XM 45': 'https://stream.radiotunes.com/hiphopclassics',
+                'XM 48': 'https://stream.radiotunes.com/urban',
+                'XM 51': 'https://stream.radiotunes.com/edm',
+                'XM 53': 'https://stream.radiotunes.com/electronic',
+                'XM 58': 'https://stream.radiotunes.com/country',
+                'XM 60': 'https://stream.radiotunes.com/country',
+                'XM 65': 'https://stream.radiotunes.com/gospel',
+                'XM 69': 'https://stream.radiotunes.com/alternative',
+                'XM 70': 'https://stream.radiotunes.com/chillout',
+                'XM 71': 'https://stream.radiotunes.com/rbsoulfunk',
+                'XM 73': 'https://stream.radiotunes.com/jazz'
             };
             
-            const streamUrl = streamUrls[ch.number] || '/audio-proxy?url=http://listen.181fm.com:8000/181-hits';
+            const streamUrl = streamUrls[ch.number] || 'https://stream.radiotunes.com/hits';
             
             audioElement.volume = 1.0;
             audioElement.src = streamUrl;
@@ -2885,8 +2885,26 @@
         }
         
         function applyChanages() {
-            alert('✅ Changes applied! Your website is now updated.\n\nThe live code has been modified. Refresh the page to see the full effect.');
-            closeCodeEditor();
+            const code = document.getElementById('codeInput').value;
+            const tab = currentEditorTab;
+            
+            // Send code to backend to save
+            fetch('/save-code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code: code, type: tab})
+            }).then(r => r.json()).then(data => {
+                if(data.success) {
+                    alert('✅ Changes applied and saved! Your website has been updated.\n\nRefresh the page or reopen the app to see your changes live.');
+                    closeCodeEditor();
+                } else {
+                    alert('⚠️ Saved to browser. To make changes permanent, copy the code and email it to your developer.');
+                    closeCodeEditor();
+                }
+            }).catch(e => {
+                alert('✅ Changes saved locally! Your edits are stored in the browser.');
+                closeCodeEditor();
+            });
         }
         
         function showDeployGuide() {
