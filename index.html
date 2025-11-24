@@ -2648,12 +2648,16 @@
         }
         
         function selectChannel(idx) {
-            currentChannelIndex = idx;
-            updateChannelDisplay();
-            document.querySelectorAll('.channel-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === idx);
-            });
-            if (!isPlaying) togglePlay();
+            try {
+                if (typeof idx !== 'number' || idx < 0 || idx >= channels.length) return;
+                currentChannelIndex = idx;
+                updateChannelDisplay();
+                document.querySelectorAll('.channel-btn').forEach((btn, i) => {
+                    btn.classList.toggle('active', i === idx);
+                });
+                if (!isPlaying) togglePlay();
+            } catch (e) {
+            }
         }
         
         function nextChannel() {
@@ -2682,90 +2686,82 @@
         }
         
         function playCurrentChannel() {
-            console.log('▶️ playCurrentChannel called');
-            if (channels.length === 0) {
-                console.log('❌ No channels loaded');
-                return;
-            }
-            const ch = channels[currentChannelIndex];
-            console.log('📻 Playing channel:', ch.name, ch.number);
-            
-            // CRITICAL: Stop previous audio before loading new one
-            console.log('⏹️ Stopping previous audio...');
-            audioElement.pause();
-            audioElement.currentTime = 0;
-            audioElement.src = '';  // Clear source
-            
-            // TEST URL - Known to work
-            const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-            
-            console.log('🔗 Setting audio source to:', testUrl);
-            audioElement.volume = 1.0;
-            audioElement.crossOrigin = 'anonymous';
-            audioElement.src = testUrl;
-            
-            console.log('▶️ Calling audio.play()...');
-            const playPromise = audioElement.play();
-            
-            if (playPromise && typeof playPromise.then === 'function') {
-                playPromise.then(() => {
-                    console.log('✅ Audio play() succeeded!');
-                    isPlaying = true;
-                    updatePlayButton();
-                }).catch(error => {
-                    console.log('❌ Audio play() failed:', error.name, error.message);
-                    isPlaying = false;
-                    updatePlayButton();
-                });
-            } else {
-                console.log('ℹ️ Old browser - play() returned:', playPromise);
-                isPlaying = true;
-            }
-            
-            audioElement.onerror = function(e) {
-                console.log('❌ Audio element error:', e, 'Code:', audioElement.error?.code);
-            };
-            
-            audioElement.onloadstart = function() {
-                console.log('📥 Audio loading started...');
-            };
-            
-            audioElement.oncanplay = function() {
-                console.log('✅ Audio ready to play');
-            };
-            
-            // iOS MediaSession - shows in Control Center and Dynamic Island
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: ch.name,
-                    artist: 'SiriusXM',
-                    album: ch.genre,
-                    artwork: [
-                        {
-                            src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23667eea" width="100" height="100"/><circle cx="50" cy="50" r="30" fill="%23764ba2"/></svg>',
-                            sizes: '96x96',
-                            type: 'image/svg+xml'
-                        }
-                    ]
-                });
+            try {
+                if (!audioElement || channels.length === 0) {
+                    return;
+                }
+                const ch = channels[currentChannelIndex];
+                if (!ch) {
+                    return;
+                }
                 
-                navigator.mediaSession.setActionHandler('play', () => {
-                    audioElement.play().catch(() => {});
-                    isPlaying = true;
-                    updatePlayButton();
-                });
-                navigator.mediaSession.setActionHandler('pause', () => {
+                try {
                     audioElement.pause();
+                    audioElement.currentTime = 0;
+                    audioElement.src = '';
+                } catch (e) {
+                    audioElement = new Audio();
+                }
+                
+                const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                
+                audioElement.volume = 1.0;
+                audioElement.crossOrigin = 'anonymous';
+                audioElement.src = testUrl;
+                
+                const playPromise = audioElement.play();
+                
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise.then(() => {
+                        isPlaying = true;
+                        updatePlayButton();
+                    }).catch(error => {
+                        isPlaying = false;
+                        updatePlayButton();
+                    });
+                } else {
+                    isPlaying = true;
+                }
+                
+                audioElement.onerror = function(e) {
                     isPlaying = false;
-                    updatePlayButton();
-                });
-                navigator.mediaSession.setActionHandler('nexttrack', () => {
-                    nextChannel();
-                });
-                navigator.mediaSession.setActionHandler('previoustrack', () => {
-                    previousChannel();
-                });
-                navigator.mediaSession.playbackState = 'playing';
+                };
+                
+                if ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') {
+                    try {
+                        navigator.mediaSession.metadata = new MediaMetadata({
+                            title: String(ch.name).slice(0, 100),
+                            artist: 'SiriusXM',
+                            album: String(ch.genre).slice(0, 100),
+                            artwork: [{
+                                src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23667eea" width="100" height="100"/><circle cx="50" cy="50" r="30" fill="%23764ba2"/></svg>',
+                                sizes: '96x96',
+                                type: 'image/svg+xml'
+                            }]
+                        });
+                        
+                        navigator.mediaSession.setActionHandler('play', () => {
+                            audioElement.play().catch(() => {});
+                            isPlaying = true;
+                            updatePlayButton();
+                        });
+                        navigator.mediaSession.setActionHandler('pause', () => {
+                            audioElement.pause();
+                            isPlaying = false;
+                            updatePlayButton();
+                        });
+                        navigator.mediaSession.setActionHandler('nexttrack', () => {
+                            nextChannel();
+                        });
+                        navigator.mediaSession.setActionHandler('previoustrack', () => {
+                            previousChannel();
+                        });
+                        navigator.mediaSession.playbackState = 'playing';
+                    } catch (e) {
+                    }
+                }
+            } catch (e) {
+                isPlaying = false;
             }
         }
         
@@ -2777,44 +2773,77 @@
         }
         
         function updateChannelDisplay() {
-            const ch = channels[currentChannelIndex];
-            const nameEl = document.getElementById('channelName');
-            const numEl = document.getElementById('channelNumber');
-            if (nameEl) nameEl.textContent = ch.name;
-            if (numEl) numEl.textContent = ch.number;
+            try {
+                if (!channels || currentChannelIndex < 0 || currentChannelIndex >= channels.length) return;
+                const ch = channels[currentChannelIndex];
+                if (!ch) return;
+                const nameEl = document.getElementById('channelName');
+                const numEl = document.getElementById('channelNumber');
+                if (nameEl) nameEl.textContent = String(ch.name).slice(0, 100);
+                if (numEl) numEl.textContent = String(ch.number).slice(0, 50);
+            } catch (e) {
+            }
         }
         
         function addToFavorites() {
-            const ch = channels[currentChannelIndex];
-            const exists = favorites.some(f => f.number === ch.number);
-            if (!exists) {
-                favorites.push(ch);
-                localStorage.setItem('favorites', JSON.stringify(favorites));
-                updateFavorites();
+            try {
+                if (!channels || currentChannelIndex < 0 || currentChannelIndex >= channels.length) return;
+                const ch = channels[currentChannelIndex];
+                if (!ch || !ch.number) return;
+                if (favorites.length >= 100) {
+                    alert('Maximum 100 favorites reached');
+                    return;
+                }
+                const exists = favorites.some(f => f && f.number === ch.number);
+                if (!exists) {
+                    favorites.push(ch);
+                    try {
+                        localStorage.setItem('favorites', JSON.stringify(favorites));
+                    } catch (e) {
+                        favorites.pop();
+                    }
+                    updateFavorites();
+                }
+            } catch (e) {
             }
         }
         
         function removeFromFavorites(number) {
-            favorites = favorites.filter(f => f.number !== number);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            updateFavorites();
+            try {
+                if (!number || typeof number !== 'string') return;
+                favorites = favorites.filter(f => f && f.number !== number);
+                try {
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                } catch (e) {
+                }
+                updateFavorites();
+            } catch (e) {
+            }
         }
         
         function updateFavorites() {
-            const list = document.getElementById('favoritesList');
-            const countEl = document.getElementById('favoriteCount');
-            if (!list) return;
-            if (countEl) countEl.textContent = `(${favorites.length} favorites)`;
-            if (favorites.length === 0) {
-                list.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No favorites yet. Select a channel and add it to get started!</p>';
-                return;
+            try {
+                const list = document.getElementById('favoritesList');
+                const countEl = document.getElementById('favoriteCount');
+                if (!list) return;
+                if (countEl) countEl.textContent = `(${(favorites || []).length} favorites)`;
+                if (!favorites || favorites.length === 0) {
+                    list.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No favorites yet. Select a channel and add it to get started!</p>';
+                    return;
+                }
+                list.innerHTML = favorites.filter(fav => fav && fav.number && fav.name).map(fav => {
+                    const idx = channels.findIndex(c => c && c.number === fav.number);
+                    const fname = String(fav.name).replace(/['"<>]/g, '').slice(0, 50);
+                    const fnum = String(fav.number).replace(/['"<>]/g, '').slice(0, 10);
+                    return `
+                        <button class="favorite-btn" onclick="selectChannel(${idx});">
+                            ${fname}<br><small>${fnum}</small>
+                            <button class="favorite-remove" onclick="event.stopPropagation(); removeFromFavorites('${fnum}');">×</button>
+                        </button>
+                    `;
+                }).join('');
+            } catch (e) {
             }
-            list.innerHTML = favorites.map(fav => `
-                <button class="favorite-btn" onclick="currentChannelIndex = ${channels.findIndex(c => c.number === fav.number)}; selectChannel(currentChannelIndex);">
-                    ${fav.name}<br><small>${fav.number}</small>
-                    <button class="favorite-remove" onclick="event.stopPropagation(); removeFromFavorites('${fav.number}');">×</button>
-                </button>
-            `).join('');
         }
         
         // Update time display and progress from actual audio
@@ -2833,7 +2862,6 @@
             if (volumeControl) {
                 volumeControl.addEventListener('input', (e) => {
                     audioElement.volume = e.target.value / 100;
-                    console.log('Volume: ' + e.target.value + '%');
                 });
                 // Set initial volume
                 audioElement.volume = 0.7;
@@ -2860,7 +2888,6 @@
                 document.getElementById('passwordModal').classList.remove('active');
                 document.getElementById('passwordInput').value = '';
                 navigateTo('dev');
-                console.log('🔓 Developer access granted!');
             } else {
                 alert('❌ Incorrect password. Try again!');
                 document.getElementById('passwordInput').value = '';
@@ -2890,7 +2917,6 @@
             } else if (type === 'css') {
                 textarea.value = '/* Edit your CSS here */\nbody { font-family: -apple-system, sans-serif; }\nh1 { color: #667eea; }';
             } else if (type === 'js') {
-                textarea.value = '// Edit your JavaScript here\nconsole.log("Live editor active!");\n// Changes apply in real-time';
             }
         }
         
@@ -2928,11 +2954,14 @@
         
         // AI CHAT WITH WEB SEARCH
         async function sendChatMessage() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            if (!message) return;
-            
-            const chatBox = document.getElementById('chatBox');
+            try {
+                const input = document.getElementById('userInput');
+                if (!input) return;
+                const message = input.value.trim();
+                if (!message || message.length === 0 || message.length > 500) return;
+                
+                const chatBox = document.getElementById('chatBox');
+                if (!chatBox) return;
             
             // Add user message
             const userDiv = document.createElement('div');
