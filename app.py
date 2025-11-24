@@ -375,6 +375,29 @@ class ActivationManager:
 def index():
     return render_template('index.html')
 
+@app.route('/audio-proxy')
+def audio_proxy():
+    """Proxy audio streams to bypass HTTPS/HTTP mixed content issues on GitHub Pages"""
+    try:
+        stream_url = request.args.get('url', '').strip()
+        if not stream_url or not stream_url.startswith('http://listen.181fm.com'):
+            return 'Invalid URL', 400
+        
+        response = requests.get(stream_url, stream=True, timeout=30)
+        
+        def generate():
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    yield chunk
+        
+        return generate(), 200, {
+            'Content-Type': 'audio/mpeg',
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'no-cache'
+        }
+    except:
+        return '', 500
+
 @app.route('/activate', methods=['POST'])
 def activate():
     data = request.json
