@@ -2888,10 +2888,14 @@
         // Update time display and progress from actual audio
         function updateTimeDisplay() {
             const audio = getAudioElement();
+            if (!audio) return;
             const current = Math.floor(audio.currentTime) || 0;
             const minutes = Math.floor(current / 60);
             const seconds = current % 60;
-            document.getElementById('currentTime').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            const timeEl = document.getElementById('currentTime');
+            if (timeEl) {
+                timeEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
         }
         
         // Wait for DOM to be ready
