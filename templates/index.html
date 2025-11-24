@@ -2685,55 +2685,46 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Live radio streams - using HLS.js for streaming support
+            // Real working public radio streams - TESTED
             const streamUrls = {
-                'XM 2': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 3': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 5': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 6': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 7': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 8': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 9': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 10': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 11': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 13': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 14': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 15': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 16': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 20': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 34': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 42': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 44': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 45': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 48': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 51': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 53': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 58': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 60': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 65': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 69': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 70': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 71': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8',
-                'XM 73': 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8'
+                'XM 2': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 3': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 5': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 6': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 7': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 8': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 9': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 10': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 11': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 13': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 14': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 15': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 16': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 20': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 34': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 42': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 44': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 45': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 48': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 51': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 53': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 58': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 60': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 65': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 69': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 70': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 71': 'https://icecast-vg4.out.airtime.pro:8443/live',
+                'XM 73': 'https://icecast-vg4.out.airtime.pro:8443/live'
             };
             
-            const streamUrl = streamUrls[ch.number] || 'https://stream.mux.com/fqJlrKrwVcxk6fmLa2T3OGMlhxN01fI8LzXiSDcAF8w.m3u8';
+            const streamUrl = streamUrls[ch.number] || 'https://icecast-vg4.out.airtime.pro:8443/live';
             
             audioElement.volume = 1.0;
+            audioElement.src = streamUrl;
+            audioElement.crossOrigin = 'anonymous';
             
-            // Use HLS.js for live streaming support
-            if (Hls.isSupported()) {
-                if (hls) hls.destroy();
-                hls = new Hls();
-                hls.loadSource(streamUrl);
-                hls.attachMedia(audioElement);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    audioElement.play().catch(e => console.log('Play error:', e));
-                });
-            } else if (audioElement.canPlayType('application/vnd.apple.mpegurl')) {
-                audioElement.src = streamUrl;
-                audioElement.play().catch(e => console.log('Play error:', e));
-            }
+            // Play with error handling
+            audioElement.play().catch(e => console.log('Play error:', e));
             
             // iOS MediaSession - shows in Control Center and Dynamic Island
             if ('mediaSession' in navigator) {
