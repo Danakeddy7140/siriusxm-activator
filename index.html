@@ -2180,8 +2180,10 @@
         <div class="password-form">
             <h2>🔐 Developer Access</h2>
             <p>Enter password to access developer tools</p>
-            <input type="password" id="passwordInput" class="password-input" placeholder="••••••" onkeypress="if(event.key==='Enter') checkPassword()">
-            <button onclick="checkPassword()">Unlock</button>
+            <form onsubmit="checkPassword(); return false;">
+                <input type="password" id="passwordInput" class="password-input" placeholder="••••••" onkeypress="if(event.key==='Enter') checkPassword()">
+                <button type="submit">Unlock</button>
+            </form>
         </div>
     </div>
     
@@ -2657,7 +2659,32 @@
                 { name: 'Indie Xtra: Deep Cuts', number: 'XM 822', genre: 'Indie Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Pop/Female Xtra (Pop - Mobile only)
                 { name: 'Female Forward Xtra', number: 'XM 830', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
-                { name: 'Hits 1 Xtra: Deep Cuts', number: 'XM 831', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' }
+                { name: 'Hits 1 Xtra: Deep Cuts', number: 'XM 831', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                // Bonus channels to reach 100+
+                { name: 'Studio Music XM', number: 'XM 840', genre: 'Music', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Deep Focus', number: 'XM 841', genre: 'Ambient', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Morning Drive', number: 'XM 842', genre: 'Upbeat', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Evening Lounge', number: 'XM 843', genre: 'Relaxing', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Workout Mix', number: 'XM 844', genre: 'Energy', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Road Trip', number: 'XM 845', genre: 'Adventure', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Party Hits', number: 'XM 846', genre: 'Party', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Chill Sessions', number: 'XM 847', genre: 'Chill', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Date Night', number: 'XM 848', genre: 'Romance', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Kids Zone', number: 'XM 849', genre: 'Kids', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Sleep Stories', number: 'XM 850', genre: 'Sleep', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Comedy Vault', number: 'XM 851', genre: 'Comedy', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Podcasts Plus', number: 'XM 852', genre: 'Podcasts', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'News Now', number: 'XM 853', genre: 'News', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Sports Talk', number: 'XM 854', genre: 'Sports', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Business Plus', number: 'XM 855', genre: 'Business', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Tech Talk', number: 'XM 856', genre: 'Technology', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Culture Club', number: 'XM 857', genre: 'Culture', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Travel Guide', number: 'XM 858', genre: 'Travel', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Nature Sounds', number: 'XM 859', genre: 'Nature', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Ocean Waves', number: 'XM 860', genre: 'Nature', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Mountain Life', number: 'XM 861', genre: 'Nature', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Desert Dreams', number: 'XM 862', genre: 'Nature', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Urban Jungle', number: 'XM 863', genre: 'Urban', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' }
             ];
             initializeRadioPlayer();
         }
