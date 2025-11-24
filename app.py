@@ -565,82 +565,134 @@ def stream_convert():
 
 @app.route('/search-music', methods=['POST'])
 def search_music():
-    """Search for music using Spotify API"""
+    """Search for music using Spotify API with retry logic"""
     data = request.json
     query = data.get('q', '').strip()
     
     if not query or len(query) > 200:
         return jsonify({'error': 'Invalid search query'}), 400
     
-    try:
-        # Get Spotify access token from Replit connection
-        hostname = os.environ.get('REPLIT_CONNECTORS_HOSTNAME', 'connectors.local.replit.com')
-        xReplitToken = os.environ.get('REPL_IDENTITY') or os.environ.get('WEB_REPL_RENEWAL')
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            # Get Spotify access token from Replit connection
+            hostname = os.environ.get('REPLIT_CONNECTORS_HOSTNAME', 'connectors.local.replit.com')
+            xReplitToken = os.environ.get('REPL_IDENTITY') or os.environ.get('WEB_REPL_RENEWAL')
+            
+            if not xReplitToken:
+                return jsonify({'results': [], 'error': 'Spotify not configured'}), 400
+            
+            headers_req = {
+                'Accept': 'application/json',
+                'X_REPLIT_TOKEN': ('repl ' if os.environ.get('REPL_IDENTITY') else 'depl ') + xReplitToken
+            }
+            
+            # Get token - with longer timeout and retry
+            conn_resp = requests.get(
+                f'https://{hostname}/api/v2/connection?include_secrets=true&connector_names=spotify',
+                headers=headers_req,
+                timeout=15,  # Longer timeout for connection retrieval
+                verify=True
+            )
+            
+            if conn_resp.status_code != 200:
+                print(f"[MUSIC] Attempt {attempt+1}: Connection API returned {conn_resp.status_code}")
+                if attempt < max_retries - 1:
+                    time.sleep(1)  # Brief pause before retry
+                    continue
+                return jsonify({'results': [], 'error': f'Spotify connection error ({conn_resp.status_code})'}), 400
+            
+            conn_data = conn_resp.json()
+            
+            if not conn_data.get('items') or len(conn_data['items']) == 0:
+                print("[MUSIC] No Spotify items found in connection")
+                return jsonify({'results': [], 'error': 'Spotify not connected. Please check your Spotify integration.'}), 400
+            
+            connection = conn_data['items'][0]
+            access_token = connection.get('settings', {}).get('access_token')
+            
+            if not access_token:
+                print("[MUSIC] No access token in connection settings")
+                return jsonify({'results': [], 'error': 'Spotify token missing'}), 400
+            
+            print(f"[MUSIC] Searching Spotify for: {query[:50]}")
+            
+            # Search Spotify for tracks
+            spotify_search_url = "https://api.spotify.com/v1/search"
+            spotify_headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+            
+            search_params = {
+                'q': query,
+                'type': 'track',
+                'limit': 15
+            }
+            
+            search_resp = requests.get(
+                spotify_search_url,
+                params=search_params,
+                headers=spotify_headers,
+                timeout=15,  # Longer timeout for search
+                verify=True
+            )
+            
+            if search_resp.status_code == 401:
+                print(f"[MUSIC] Attempt {attempt+1}: Spotify token expired (401)")
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
+                return jsonify({'results': [], 'error': 'Spotify token expired. Please try again.'}), 401
+            
+            if search_resp.status_code != 200:
+                print(f"[MUSIC] Attempt {attempt+1}: Spotify search returned {search_resp.status_code}")
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
+                return jsonify({'results': [], 'error': f'Spotify search error ({search_resp.status_code})'}), 400
+            
+            search_data = search_resp.json()
+            
+            results = []
+            if 'tracks' in search_data and 'items' in search_data['tracks']:
+                for track in search_data['tracks']['items'][:15]:
+                    try:
+                        artists = ', '.join([artist.get('name', 'Unknown') for artist in track.get('artists', [])])
+                        results.append({
+                            'name': track.get('name', 'Unknown'),
+                            'artist': artists,
+                            'popularity': track.get('popularity', 0),
+                            'preview_url': track.get('preview_url', ''),
+                            'external_urls': track.get('external_urls', {}).get('spotify', '')
+                        })
+                    except Exception as track_error:
+                        print(f"[MUSIC] Error parsing track: {str(track_error)[:50]}")
+                        pass
+            
+            print(f"[MUSIC] Found {len(results)} results")
+            return jsonify({'results': results})
         
-        if not xReplitToken:
-            return jsonify({'results': [], 'error': 'Spotify not configured'}), 400
-        
-        headers_req = {
-            'Accept': 'application/json',
-            'X_REPLIT_TOKEN': ('repl ' if os.environ.get('REPL_IDENTITY') else 'depl ') + xReplitToken
-        }
-        
-        conn_resp = requests.get(
-            f'https://{hostname}/api/v2/connection?include_secrets=true&connector_names=spotify',
-            headers=headers_req,
-            timeout=5,
-            verify=True
-        )
-        conn_resp.raise_for_status()
-        conn_data = conn_resp.json()
-        
-        if not conn_data.get('items') or len(conn_data['items']) == 0:
-            return jsonify({'results': [], 'error': 'Spotify not connected'}), 400
-        
-        connection = conn_data['items'][0]
-        access_token = connection.get('settings', {}).get('access_token')
-        
-        if not access_token:
-            return jsonify({'results': [], 'error': 'No Spotify token'}), 400
-        
-        # Search Spotify for tracks
-        spotify_search_url = "https://api.spotify.com/v1/search"
-        spotify_headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Content-Type': 'application/json'
-        }
-        
-        search_params = {
-            'q': query,
-            'type': 'track',
-            'limit': 15
-        }
-        
-        search_resp = requests.get(spotify_search_url, params=search_params, headers=spotify_headers, timeout=10, verify=True)
-        search_resp.raise_for_status()
-        search_data = search_resp.json()
-        
-        results = []
-        if 'tracks' in search_data and 'items' in search_data['tracks']:
-            for track in search_data['tracks']['items'][:15]:
-                try:
-                    artists = ', '.join([artist.get('name', 'Unknown') for artist in track.get('artists', [])])
-                    results.append({
-                        'name': track.get('name', 'Unknown'),
-                        'artist': artists,
-                        'popularity': track.get('popularity', 0),
-                        'preview_url': track.get('preview_url', ''),
-                        'external_urls': track.get('external_urls', {}).get('spotify', '')
-                    })
-                except:
-                    pass
-        
-        return jsonify({'results': results})
+        except requests.exceptions.Timeout:
+            print(f"[MUSIC] Attempt {attempt+1}: Request timeout")
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
+            return jsonify({'results': [], 'error': 'Spotify connection timeout. Please try again.'}), 504
+        except requests.exceptions.ConnectionError as e:
+            print(f"[MUSIC] Attempt {attempt+1}: Connection error - {str(e)[:50]}")
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
+            return jsonify({'results': [], 'error': 'Network error. Please check your connection.'}), 503
+        except Exception as e:
+            print(f"[MUSIC] Attempt {attempt+1}: Unexpected error - {str(e)[:100]}")
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
+            return jsonify({'results': [], 'error': f'Error: {str(e)[:30]}'}), 500
     
-    except requests.exceptions.RequestException as e:
-        return jsonify({'results': [], 'error': 'Spotify API error'})
-    except Exception as e:
-        return jsonify({'results': [], 'error': str(e)[:50]})
+    return jsonify({'results': [], 'error': 'Spotify search failed after retries'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
