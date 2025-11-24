@@ -2682,86 +2682,51 @@
         }
         
         function playCurrentChannel() {
-            if (channels.length === 0) return;
+            console.log('▶️ playCurrentChannel called');
+            if (channels.length === 0) {
+                console.log('❌ No channels loaded');
+                return;
+            }
             const ch = channels[currentChannelIndex];
+            console.log('📻 Playing channel:', ch.name, ch.number);
             
-            // TEST STREAM - Verified working MP3 for testing the player
-            // This is a test file to verify the player works correctly
-            // Users can add their own stream URLs in the developer section
+            // TEST URL - Known to work
             const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
             
-            // For production: User can add real radio streams here
-            const streamUrls = {
-                'XM 2': testUrl,
-                'XM 3': testUrl,
-                'XM 5': testUrl,
-                'XM 6': testUrl,
-                'XM 7': testUrl,
-                'XM 8': testUrl,
-                'XM 9': testUrl,
-                'XM 10': testUrl,
-                'XM 11': testUrl,
-                'XM 13': testUrl,
-                'XM 14': testUrl,
-                'XM 15': testUrl,
-                'XM 16': testUrl,
-                'XM 20': testUrl,
-                'XM 34': testUrl,
-                'XM 42': testUrl,
-                'XM 44': testUrl,
-                'XM 45': testUrl,
-                'XM 48': testUrl,
-                'XM 51': testUrl,
-                'XM 53': testUrl,
-                'XM 58': testUrl,
-                'XM 60': testUrl,
-                'XM 65': testUrl,
-                'XM 69': testUrl,
-                'XM 70': testUrl,
-                'XM 71': testUrl,
-                'XM 73': testUrl
-            };
-            
-            const streamUrl = streamUrls[ch.number] || testUrl;
-            // For now: Load MP3 directly without FFmpeg conversion for testing
-            // This will tell us if the audio player works
-            
-            // Remove old listeners
-            audioElement.onloadstart = null;
-            audioElement.onerror = null;
-            audioElement.onplay = null;
-            
-            // Set audio properties BEFORE setting src
+            console.log('🔗 Setting audio source to:', testUrl);
             audioElement.volume = 1.0;
             audioElement.crossOrigin = 'anonymous';
+            audioElement.src = testUrl;
             
-            // Add error listener BEFORE setting src
-            audioElement.onerror = function() {
-                console.log('Audio error:', audioElement.error);
-                isPlaying = false;
-                updatePlayButton();
-            };
-            
-            // Add play listener
-            audioElement.onplay = function() {
-                console.log('Audio started playing!');
-                isPlaying = true;
-                updatePlayButton();
-            };
-            
-            // Test: Load URL directly (no FFmpeg conversion for now)
-            audioElement.src = streamUrl;
-            
-            // Attempt to play - will start when data loads
+            console.log('▶️ Calling audio.play()...');
             const playPromise = audioElement.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log('Play failed:', error.message);
+            
+            if (playPromise && typeof playPromise.then === 'function') {
+                playPromise.then(() => {
+                    console.log('✅ Audio play() succeeded!');
+                    isPlaying = true;
+                    updatePlayButton();
+                }).catch(error => {
+                    console.log('❌ Audio play() failed:', error.name, error.message);
+                    isPlaying = false;
+                    updatePlayButton();
                 });
+            } else {
+                console.log('ℹ️ Old browser - play() returned:', playPromise);
+                isPlaying = true;
             }
             
-            // Set flag after initiating play
-            isPlaying = true;
+            audioElement.onerror = function(e) {
+                console.log('❌ Audio element error:', e, 'Code:', audioElement.error?.code);
+            };
+            
+            audioElement.onloadstart = function() {
+                console.log('📥 Audio loading started...');
+            };
+            
+            audioElement.oncanplay = function() {
+                console.log('✅ Audio ready to play');
+            };
             
             // iOS MediaSession - shows in Control Center and Dynamic Island
             if ('mediaSession' in navigator) {
