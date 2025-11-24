@@ -624,10 +624,11 @@ def search_music():
                 'Content-Type': 'application/json'
             }
             
+            # Search across multiple types for broader results (like real Spotify)
             search_params = {
                 'q': query,
-                'type': 'track',
-                'limit': 15
+                'type': 'track,artist,album',  # Search all types for broader results
+                'limit': 50  # Get more results to filter down
             }
             
             search_resp = requests.get(
@@ -655,19 +656,57 @@ def search_music():
             search_data = search_resp.json()
             
             results = []
+            
+            # Add tracks (up to 10)
             if 'tracks' in search_data and 'items' in search_data['tracks']:
-                for track in search_data['tracks']['items'][:15]:
+                for track in search_data['tracks']['items'][:10]:
                     try:
                         artists = ', '.join([artist.get('name', 'Unknown') for artist in track.get('artists', [])])
                         results.append({
                             'name': track.get('name', 'Unknown'),
                             'artist': artists,
+                            'type': '🎵 Track',
                             'popularity': track.get('popularity', 0),
                             'preview_url': track.get('preview_url', ''),
                             'external_urls': track.get('external_urls', {}).get('spotify', '')
                         })
                     except Exception as track_error:
                         print(f"[MUSIC] Error parsing track: {str(track_error)[:50]}")
+                        pass
+            
+            # Add artists (up to 3)
+            if 'artists' in search_data and 'items' in search_data['artists']:
+                for artist in search_data['artists']['items'][:3]:
+                    try:
+                        genre_list = artist.get('genres', [])
+                        genres = ', '.join(genre_list[:2]) if genre_list else 'Artist'
+                        results.append({
+                            'name': artist.get('name', 'Unknown Artist'),
+                            'artist': genres or 'Artist',
+                            'type': '👤 Artist',
+                            'popularity': artist.get('popularity', 0),
+                            'preview_url': '',
+                            'external_urls': artist.get('external_urls', {}).get('spotify', '')
+                        })
+                    except Exception as artist_error:
+                        print(f"[MUSIC] Error parsing artist: {str(artist_error)[:50]}")
+                        pass
+            
+            # Add albums (up to 2)
+            if 'albums' in search_data and 'items' in search_data['albums']:
+                for album in search_data['albums']['items'][:2]:
+                    try:
+                        artists = ', '.join([artist.get('name', 'Unknown') for artist in album.get('artists', [])])
+                        results.append({
+                            'name': album.get('name', 'Unknown Album'),
+                            'artist': f"Album • {artists}",
+                            'type': '💿 Album',
+                            'popularity': 0,
+                            'preview_url': '',
+                            'external_urls': album.get('external_urls', {}).get('spotify', '')
+                        })
+                    except Exception as album_error:
+                        print(f"[MUSIC] Error parsing album: {str(album_error)[:50]}")
                         pass
             
             print(f"[MUSIC] Found {len(results)} results")
