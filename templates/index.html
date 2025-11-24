@@ -1866,7 +1866,10 @@
     </style>
 </head>
 <body>
-    <audio id="siriusAudio" preload="auto" crossorigin="anonymous" controls style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px;"></audio>
+    <audio id="siriusAudio" preload="auto" crossorigin="anonymous" controls style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px;">
+        <source id="audioSource" type="audio/mpeg">
+        <p>Your browser does not support HTML5 audio.</p>
+    </audio>
     
     <div class="background-orbs">
         <div class="orb orb-1"></div>
@@ -2712,8 +2715,6 @@
                 
                 audio.pause();
                 audio.currentTime = 0;
-                audio.src = '';
-                audio.crossOrigin = 'anonymous';
                 
                 let audioUrl;
                 const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
@@ -2727,7 +2728,11 @@
                 }
                 
                 audio.volume = 1.0;
-                audio.src = audioUrl;
+                const source = audio.querySelector('source');
+                if (source) {
+                    source.src = audioUrl;
+                    source.type = 'audio/mpeg';
+                }
                 audio.load();
                 
                 const playPromise = audio.play();
