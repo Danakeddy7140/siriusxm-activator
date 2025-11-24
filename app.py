@@ -418,60 +418,6 @@ def save_code():
     except (IOError, OSError, ValueError, TypeError) as e:
         return jsonify({'success': False, 'message': 'Failed to save code'}), 500
 
-@app.route('/audio-proxy')
-def audio_proxy():
-    """Proxy audio streams - bypass CORS and content issues"""
-    try:
-        channel = request.args.get('channel', '')
-        stream_url = request.args.get('url', '').strip()
-        
-        # Channel-based stream mapping - REAL QUALITY RADIO STREAMS
-        # Using professional public radio and SomaFM for live broadcast content
-        channel_streams = {
-            'XM1': 'https://ice.somafm.com/groovesalad',      # Groove Salad - Downtempo
-            'XM2': 'https://ice.somafm.com/secretagent',      # Secret Agent - Lounge
-            'XM3': 'https://ice.somafm.com/spacestation',     # Space Station - Ambient
-            'XM4': 'https://ice.somafm.com/dronezone',        # Drone Zone - Minimal
-            'XM5': 'https://ice.somafm.com/thetrip',          # The Trip - Progressive House
-            'XM6': 'https://ice.somafm.com/u80s',             # Underground 80s - Synth
-            'XM7': 'https://ice.somafm.com/lush',             # Lush - Vocal Electronic
-            'XM8': 'https://ice.somafm.com/poptron',          # PopTron - Indie Dance
-            'XM9': 'https://ice.somafm.com/beatblender',      # Beat Blender - Deep House
-            'XM10': 'https://ice.somafm.com/sonicuniverse',   # Sonic Universe - Jazz
-        }
-        
-        # Use channel-mapped URL if available, cycle through 1-10
-        if channel:
-            channel_num = int(''.join(filter(str.isdigit, channel))) if any(c.isdigit() for c in channel) else 1
-            cycle_num = ((channel_num - 1) % 10) + 1
-            # Get the stream, fallback to SoundHelix-Song-1 if not in list
-            stream_url = channel_streams.get(f'XM{cycle_num}', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')
-        
-        if not stream_url or not (stream_url.startswith('http://') or stream_url.startswith('https://')):
-            return jsonify({'error': 'Invalid URL'}), 400
-        
-        response = requests.get(stream_url, stream=True, timeout=30, headers={'User-Agent': 'Mozilla/5.0'}, verify=True)
-        response.raise_for_status()
-        
-        def generate():
-            try:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        yield chunk
-            except (requests.RequestException, IOError):
-                pass
-        
-        return generate(), 200, {
-            'Content-Type': 'audio/mpeg',
-            'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'no-cache',
-            'Accept-Ranges': 'bytes'
-        }
-    except requests.RequestException as e:
-        return jsonify({'error': 'Failed to fetch audio stream'}), 502
-    except Exception as e:
-        return jsonify({'error': 'Stream error'}), 500
-
 @app.route('/activate', methods=['POST'])
 def activate():
     data = request.json if request.json else {}
@@ -616,6 +562,85 @@ def stream_convert():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/search-music', methods=['POST'])
+def search_music():
+    """Search for music using Spotify API"""
+    data = request.json
+    query = data.get('q', '').strip()
+    
+    if not query or len(query) > 200:
+        return jsonify({'error': 'Invalid search query'}), 400
+    
+    try:
+        # Get Spotify access token from Replit connection
+        hostname = os.environ.get('REPLIT_CONNECTORS_HOSTNAME', 'connectors.local.replit.com')
+        xReplitToken = os.environ.get('REPL_IDENTITY') or os.environ.get('WEB_REPL_RENEWAL')
+        
+        if not xReplitToken:
+            return jsonify({'results': [], 'error': 'Spotify not configured'}), 400
+        
+        headers_req = {
+            'Accept': 'application/json',
+            'X_REPLIT_TOKEN': ('repl ' if os.environ.get('REPL_IDENTITY') else 'depl ') + xReplitToken
+        }
+        
+        conn_resp = requests.get(
+            f'https://{hostname}/api/v2/connection?include_secrets=true&connector_names=spotify',
+            headers=headers_req,
+            timeout=5,
+            verify=True
+        )
+        conn_resp.raise_for_status()
+        conn_data = conn_resp.json()
+        
+        if not conn_data.get('items') or len(conn_data['items']) == 0:
+            return jsonify({'results': [], 'error': 'Spotify not connected'}), 400
+        
+        connection = conn_data['items'][0]
+        access_token = connection.get('settings', {}).get('access_token')
+        
+        if not access_token:
+            return jsonify({'results': [], 'error': 'No Spotify token'}), 400
+        
+        # Search Spotify for tracks
+        spotify_search_url = "https://api.spotify.com/v1/search"
+        spotify_headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        search_params = {
+            'q': query,
+            'type': 'track',
+            'limit': 15
+        }
+        
+        search_resp = requests.get(spotify_search_url, params=search_params, headers=spotify_headers, timeout=10, verify=True)
+        search_resp.raise_for_status()
+        search_data = search_resp.json()
+        
+        results = []
+        if 'tracks' in search_data and 'items' in search_data['tracks']:
+            for track in search_data['tracks']['items'][:15]:
+                try:
+                    artists = ', '.join([artist.get('name', 'Unknown') for artist in track.get('artists', [])])
+                    results.append({
+                        'name': track.get('name', 'Unknown'),
+                        'artist': artists,
+                        'popularity': track.get('popularity', 0),
+                        'preview_url': track.get('preview_url', ''),
+                        'external_urls': track.get('external_urls', {}).get('spotify', '')
+                    })
+                except:
+                    pass
+        
+        return jsonify({'results': results})
+    
+    except requests.exceptions.RequestException as e:
+        return jsonify({'results': [], 'error': 'Spotify API error'})
+    except Exception as e:
+        return jsonify({'results': [], 'error': str(e)[:50]})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
