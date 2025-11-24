@@ -2685,42 +2685,43 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Real working public radio streams - TESTED
+            // Real working public radio streams - proxied through backend
             const streamUrls = {
-                'XM 2': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 3': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 5': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 6': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 7': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 8': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 9': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 10': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 11': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 13': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 14': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 15': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 16': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 20': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 34': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 42': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 44': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 45': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 48': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 51': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 53': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 58': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 60': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 65': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 69': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 70': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 71': 'https://icecast-vg4.out.airtime.pro:8443/live',
-                'XM 73': 'https://icecast-vg4.out.airtime.pro:8443/live'
+                'XM 2': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 3': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 5': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 6': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 7': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 8': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 9': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 10': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 11': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 13': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 14': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 15': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 16': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 20': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 34': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 42': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 44': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 45': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 48': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 51': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 53': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 58': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 60': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 65': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 69': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 70': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 71': 'https://listen.radionomy.com/radiomary.m3u',
+                'XM 73': 'https://listen.radionomy.com/radiomary.m3u'
             };
             
-            const streamUrl = streamUrls[ch.number] || 'https://icecast-vg4.out.airtime.pro:8443/live';
+            const streamUrl = streamUrls[ch.number] || 'https://listen.radionomy.com/radiomary.m3u';
+            const proxyUrl = `/stream-proxy?url=${encodeURIComponent(streamUrl)}`;
             
             audioElement.volume = 1.0;
-            audioElement.src = streamUrl;
+            audioElement.src = proxyUrl;
             audioElement.crossOrigin = 'anonymous';
             
             // Play with error handling
