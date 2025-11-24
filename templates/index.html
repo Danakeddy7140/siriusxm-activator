@@ -1866,7 +1866,7 @@
     </style>
 </head>
 <body>
-    <audio id="siriusAudio" preload="auto" crossorigin="anonymous" controls style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px;">
+    <audio id="siriusAudio" preload="none" crossorigin="anonymous" controls style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px; --webkit-media-seek-control: none;">
         <source id="audioSource" type="audio/mpeg">
         <p>Your browser does not support HTML5 audio.</p>
     </audio>
@@ -2559,93 +2559,93 @@
             
             // COMPLETE SiriusXM channel list - SATELLITE + XTRA (MOBILE-EXCLUSIVE)
             channels = [
-                // ===== SATELLITE CHANNELS (1-200) =====
+                // ===== SATELLITE CHANNELS (1-200) - LIVE BROADCASTS =====
                 // POP
-                { name: 'SiriusXM Hits 1', number: 'XM 2', genre: 'Pop', url: '#' },
-                { name: 'Unwell Music', number: 'XM 3', genre: 'Pop', url: '#' },
-                { name: 'The Pulse', number: 'XM 5', genre: 'Pop', url: '#' },
-                { name: 'PopRocks', number: 'XM 6', genre: 'Pop Rock', url: '#' },
-                { name: '70s on 7', number: 'XM 7', genre: 'Classic Pop', url: '#' },
-                { name: '80s on 8', number: 'XM 8', genre: 'Classic Pop', url: '#' },
-                { name: '90s on 9', number: 'XM 9', genre: 'Classic Pop', url: '#' },
-                { name: 'Pop2K', number: 'XM 10', genre: 'Pop', url: '#' },
-                { name: 'The 10s Spot', number: 'XM 11', genre: 'Pop', url: '#' },
-                { name: 'Kelly Clarkson Connection', number: 'XM 12', genre: 'Pop', url: '#' },
-                { name: 'Hits 1 Countdown', number: 'XM 13', genre: 'Pop', url: '#' },
-                { name: 'Life with John Mayer', number: 'XM 14', genre: 'Pop', url: '#' },
-                { name: "Pitbull's Globalization", number: 'XM 15', genre: 'Pop', url: '#' },
-                { name: 'The Blend', number: 'XM 16', genre: 'Soft Pop', url: '#' },
+                { name: 'SiriusXM Hits 1', number: 'XM 2', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Unwell Music', number: 'XM 3', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'The Pulse', number: 'XM 5', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'PopRocks', number: 'XM 6', genre: 'Pop Rock', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: '70s on 7', number: 'XM 7', genre: 'Classic Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: '80s on 8', number: 'XM 8', genre: 'Classic Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: '90s on 9', number: 'XM 9', genre: 'Classic Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Pop2K', number: 'XM 10', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'The 10s Spot', number: 'XM 11', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Kelly Clarkson Connection', number: 'XM 12', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Hits 1 Countdown', number: 'XM 13', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Life with John Mayer', number: 'XM 14', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: "Pitbull's Globalization", number: 'XM 15', genre: 'Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'The Blend', number: 'XM 16', genre: 'Soft Pop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // ROCK
-                { name: 'Octane', number: 'XM 20', genre: 'Rock', url: '#' },
-                { name: 'Lithium', number: 'XM 34', genre: 'Alternative Rock', url: '#' },
-                { name: 'Spectrum', number: 'XM 42', genre: 'Alt Rock', url: '#' },
-                { name: 'Utopia', number: 'XM 69', genre: 'Alternative', url: '#' },
+                { name: 'Octane', number: 'XM 20', genre: 'Rock', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Lithium', number: 'XM 34', genre: 'Alternative Rock', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Spectrum', number: 'XM 42', genre: 'Alt Rock', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Utopia', number: 'XM 69', genre: 'Alternative', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // HIP-HOP/URBAN
-                { name: 'The Heat', number: 'XM 44', genre: 'Hip-Hop', url: '#' },
-                { name: 'Backspin', number: 'XM 45', genre: 'Hip-Hop Classic', url: '#' },
-                { name: 'Turbo', number: 'XM 48', genre: 'Urban', url: '#' },
-                { name: 'BPM', number: 'XM 51', genre: 'Electronic', url: '#' },
-                { name: "Diplo's Revolution", number: 'XM 53', genre: 'Electronic', url: '#' },
+                { name: 'The Heat', number: 'XM 44', genre: 'Hip-Hop', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Backspin', number: 'XM 45', genre: 'Hip-Hop Classic', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Turbo', number: 'XM 48', genre: 'Urban', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'BPM', number: 'XM 51', genre: 'Electronic', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: "Diplo's Revolution", number: 'XM 53', genre: 'Electronic', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // COUNTRY
-                { name: 'Bluegrass Junction', number: 'XM 60', genre: 'Country', url: '#' },
-                { name: 'Prime Country', number: 'XM 58', genre: 'Country', url: '#' },
+                { name: 'Bluegrass Junction', number: 'XM 60', genre: 'Country', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Prime Country', number: 'XM 58', genre: 'Country', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // SOUL/R&B
-                { name: 'The Groove', number: 'XM 71', genre: 'Soul/Funk', url: '#' },
-                { name: 'Watercolors', number: 'XM 70', genre: 'Chill', url: '#' },
-                { name: 'Smooth Jazz', number: 'XM 73', genre: 'Jazz', url: '#' },
-                { name: 'The Message', number: 'XM 65', genre: 'Gospel', url: '#' },
+                { name: 'The Groove', number: 'XM 71', genre: 'Soul/Funk', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Watercolors', number: 'XM 70', genre: 'Chill', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Smooth Jazz', number: 'XM 73', genre: 'Jazz', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'The Message', number: 'XM 65', genre: 'Gospel', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 
                 // ===== XTRA CHANNELS (APP-ONLY/MOBILE-EXCLUSIVE) =====
                 // Octane Xtra (Hard Rock - Mobile only)
-                { name: 'Octane Xtra: Test Drive', number: 'XM 703', genre: 'Rock Xtra', url: '#' },
-                { name: 'Octane Xtra: Album Deep Cuts', number: 'XM 704', genre: 'Rock Xtra', url: '#' },
-                { name: 'Octane Xtra: Emerging Artists', number: 'XM 705', genre: 'Rock Xtra', url: '#' },
-                { name: 'Octane Xtra: Classic Hard Rock', number: 'XM 706', genre: 'Rock Xtra', url: '#' },
-                { name: 'Octane Xtra: Indie Rock', number: 'XM 707', genre: 'Rock Xtra', url: '#' },
+                { name: 'Octane Xtra: Test Drive', number: 'XM 703', genre: 'Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Octane Xtra: Album Deep Cuts', number: 'XM 704', genre: 'Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Octane Xtra: Emerging Artists', number: 'XM 705', genre: 'Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Octane Xtra: Classic Hard Rock', number: 'XM 706', genre: 'Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Octane Xtra: Indie Rock', number: 'XM 707', genre: 'Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Lithium Xtra (Alternative Rock - Mobile only)
-                { name: 'Lithium Xtra: Flashback', number: 'XM 710', genre: 'Alt Rock Xtra', url: '#' },
-                { name: 'Lithium Xtra: Deep Cuts', number: 'XM 711', genre: 'Alt Rock Xtra', url: '#' },
-                { name: 'Lithium Xtra: Grunge', number: 'XM 712', genre: 'Alt Rock Xtra', url: '#' },
-                { name: 'Lithium Xtra: Indie', number: 'XM 713', genre: 'Alt Rock Xtra', url: '#' },
+                { name: 'Lithium Xtra: Flashback', number: 'XM 710', genre: 'Alt Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Lithium Xtra: Deep Cuts', number: 'XM 711', genre: 'Alt Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Lithium Xtra: Grunge', number: 'XM 712', genre: 'Alt Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Lithium Xtra: Indie', number: 'XM 713', genre: 'Alt Rock Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Hits 1 Xtra (Pop - Mobile only)
-                { name: 'Hits 1 Xtra: Club Hits', number: 'XM 720', genre: 'Pop Xtra', url: '#' },
-                { name: 'Hits 1 Xtra: Recent Hits', number: 'XM 721', genre: 'Pop Xtra', url: '#' },
-                { name: 'Hits 1 Xtra: Throwback Hits', number: 'XM 722', genre: 'Pop Xtra', url: '#' },
+                { name: 'Hits 1 Xtra: Club Hits', number: 'XM 720', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Hits 1 Xtra: Recent Hits', number: 'XM 721', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Hits 1 Xtra: Throwback Hits', number: 'XM 722', genre: 'Pop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Heat Xtra (Hip-Hop - Mobile only)
-                { name: 'Heat Xtra: Trap Bangers', number: 'XM 730', genre: 'Hip-Hop Xtra', url: '#' },
-                { name: 'Heat Xtra: Conscious Hip-Hop', number: 'XM 731', genre: 'Hip-Hop Xtra', url: '#' },
-                { name: 'Heat Xtra: Freestyle', number: 'XM 732', genre: 'Hip-Hop Xtra', url: '#' },
+                { name: 'Heat Xtra: Trap Bangers', number: 'XM 730', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Heat Xtra: Conscious Hip-Hop', number: 'XM 731', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Heat Xtra: Freestyle', number: 'XM 732', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Backspin Xtra (Hip-Hop Classics - Mobile only)
-                { name: 'Backspin Xtra: 90s Hip-Hop', number: 'XM 733', genre: 'Hip-Hop Xtra', url: '#' },
-                { name: 'Backspin Xtra: Golden Age', number: 'XM 734', genre: 'Hip-Hop Xtra', url: '#' },
-                { name: 'Backspin Xtra: Boom Bap', number: 'XM 735', genre: 'Hip-Hop Xtra', url: '#' },
+                { name: 'Backspin Xtra: 90s Hip-Hop', number: 'XM 733', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Backspin Xtra: Golden Age', number: 'XM 734', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Backspin Xtra: Boom Bap', number: 'XM 735', genre: 'Hip-Hop Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Turbo Xtra (Urban/Reggae - Mobile only)
-                { name: 'Turbo Xtra: Reggae', number: 'XM 740', genre: 'Urban Xtra', url: '#' },
-                { name: 'Turbo Xtra: Dancehall', number: 'XM 741', genre: 'Urban Xtra', url: '#' },
-                { name: 'Turbo Xtra: Afrobeats', number: 'XM 742', genre: 'Urban Xtra', url: '#' },
+                { name: 'Turbo Xtra: Reggae', number: 'XM 740', genre: 'Urban Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Turbo Xtra: Dancehall', number: 'XM 741', genre: 'Urban Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Turbo Xtra: Afrobeats', number: 'XM 742', genre: 'Urban Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // BPM Xtra (Electronic/EDM - Mobile only)
-                { name: 'BPM Xtra: House Music', number: 'XM 750', genre: 'Electronic Xtra', url: '#' },
-                { name: 'BPM Xtra: Techno', number: 'XM 751', genre: 'Electronic Xtra', url: '#' },
-                { name: 'BPM Xtra: EDM', number: 'XM 752', genre: 'Electronic Xtra', url: '#' },
+                { name: 'BPM Xtra: House Music', number: 'XM 750', genre: 'Electronic Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'BPM Xtra: Techno', number: 'XM 751', genre: 'Electronic Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'BPM Xtra: EDM', number: 'XM 752', genre: 'Electronic Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Groove Xtra (Soul - Mobile only)
-                { name: 'Groove Xtra: Funk', number: 'XM 760', genre: 'Soul Xtra', url: '#' },
-                { name: 'Groove Xtra: Motown', number: 'XM 761', genre: 'Soul Xtra', url: '#' },
+                { name: 'Groove Xtra: Funk', number: 'XM 760', genre: 'Soul Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Groove Xtra: Motown', number: 'XM 761', genre: 'Soul Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Slow Jamz Xtra (R&B - Mobile only)
-                { name: 'Slow Jamz Xtra: Slow Jams', number: 'XM 770', genre: 'R&B Xtra', url: '#' },
-                { name: 'Slow Jamz Xtra: New School R&B', number: 'XM 771', genre: 'R&B Xtra', url: '#' },
-                { name: 'Slow Jamz Xtra: Throwback R&B', number: 'XM 772', genre: 'R&B Xtra', url: '#' },
+                { name: 'Slow Jamz Xtra: Slow Jams', number: 'XM 770', genre: 'R&B Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Slow Jamz Xtra: New School R&B', number: 'XM 771', genre: 'R&B Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Slow Jamz Xtra: Throwback R&B', number: 'XM 772', genre: 'R&B Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Jazz Xtra (Jazz - Mobile only)
-                { name: 'Jazz Xtra: Smooth Jazz', number: 'XM 780', genre: 'Jazz Xtra', url: '#' },
-                { name: 'Jazz Xtra: Classic Jazz', number: 'XM 781', genre: 'Jazz Xtra', url: '#' },
-                { name: 'Jazz Xtra: Bebop', number: 'XM 782', genre: 'Jazz Xtra', url: '#' },
-                { name: 'Cool Jazz Xtra: Ambient Jazz', number: 'XM 783', genre: 'Jazz Xtra', url: '#' },
+                { name: 'Jazz Xtra: Smooth Jazz', number: 'XM 780', genre: 'Jazz Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Jazz Xtra: Classic Jazz', number: 'XM 781', genre: 'Jazz Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Jazz Xtra: Bebop', number: 'XM 782', genre: 'Jazz Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Cool Jazz Xtra: Ambient Jazz', number: 'XM 783', genre: 'Jazz Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Country Xtra (Country - Mobile only)
-                { name: 'Country Xtra: Modern Country', number: 'XM 790', genre: 'Country Xtra', url: '#' },
-                { name: 'Country Xtra: Classic Country', number: 'XM 791', genre: 'Country Xtra', url: '#' },
-                { name: 'Country Xtra: Outlaw Country', number: 'XM 792', genre: 'Country Xtra', url: '#' },
+                { name: 'Country Xtra: Modern Country', number: 'XM 790', genre: 'Country Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Country Xtra: Classic Country', number: 'XM 791', genre: 'Country Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Country Xtra: Outlaw Country', number: 'XM 792', genre: 'Country Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
                 // Gospel Xtra (Gospel - Mobile only)
-                { name: 'Gospel Xtra: Contemporary', number: 'XM 800', genre: 'Gospel Xtra', url: '#' },
-                { name: 'Gospel Xtra: Traditional', number: 'XM 801', genre: 'Gospel Xtra', url: '#' }
+                { name: 'Gospel Xtra: Contemporary', number: 'XM 800', genre: 'Gospel Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' },
+                { name: 'Gospel Xtra: Traditional', number: 'XM 801', genre: 'Gospel Xtra', url: '/audio-proxy?url=https%3A%2F%2Fwww.soundhelix.com%2Fexamples%2Fmp3%2FSoundHelix-Song-1.mp3' }
             ];
             initializeRadioPlayer();
         }
@@ -2718,14 +2718,19 @@
                 audio.currentTime = 0;
                 
                 let audioUrl;
-                const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                let isLiveStream = true;
                 
-                if (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit') || window.location.hostname.includes('127.0.0.1')) {
-                    audioUrl = '/audio-proxy?url=' + encodeURIComponent(testUrl);
-                } else if (window.location.hostname.includes('github.io')) {
-                    audioUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(testUrl);
+                if (ch.url && ch.url !== '#') {
+                    audioUrl = ch.url;
                 } else {
-                    audioUrl = testUrl;
+                    const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                    if (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit') || window.location.hostname.includes('127.0.0.1')) {
+                        audioUrl = '/audio-proxy?url=' + encodeURIComponent(testUrl);
+                    } else if (window.location.hostname.includes('github.io')) {
+                        audioUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(testUrl);
+                    } else {
+                        audioUrl = testUrl;
+                    }
                 }
                 
                 audio.volume = 1.0;
@@ -2773,10 +2778,10 @@
                 try {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: String(channelName).slice(0, 100),
-                        artist: 'SiriusXM',
-                        album: 'Radio',
+                        artist: 'SiriusXM Live',
+                        album: 'Live Broadcast',
                         artwork: [{
-                            src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23667eea" width="100" height="100"/><circle cx="50" cy="50" r="30" fill="%23764ba2"/></svg>',
+                            src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23667eea"/><circle cx="50" cy="50" r="30" fill="%23764ba2"/><circle cx="50" cy="50" r="20" fill="%23ff6b6b" opacity="0.8"/><animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" attributeType="CSS"/></svg>',
                             sizes: '96x96',
                             type: 'image/svg+xml'
                         }]
@@ -2800,6 +2805,14 @@
                         previousChannel();
                     });
                     navigator.mediaSession.playbackState = 'playing';
+                    
+                    if ('setPositionState' in navigator.mediaSession) {
+                        navigator.mediaSession.setPositionState({
+                            duration: Infinity,
+                            playbackRate: 1,
+                            position: 0
+                        });
+                    }
                 } catch (e) {
                 }
             }
