@@ -2922,22 +2922,9 @@
             }
         }
         
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                const audio = getAudioElement();
-                audio.addEventListener('timeupdate', updateTimeDisplay);
-                const volumeControl = document.getElementById('volume');
-                if (volumeControl) {
-                    volumeControl.addEventListener('input', (e) => {
-                        audio.volume = e.target.value / 100;
-                    });
-                    audio.volume = 0.7;
-                }
-            });
-        } else {
+        // Wait for DOM to be ready - setup audio controls
+        function setupAudioControls() {
             const audio = getAudioElement();
-            audio.addEventListener('timeupdate', updateTimeDisplay);
             const volumeControl = document.getElementById('volume');
             if (volumeControl) {
                 volumeControl.addEventListener('input', (e) => {
@@ -2945,6 +2932,12 @@
                 });
                 audio.volume = 0.7;
             }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupAudioControls);
+        } else {
+            setupAudioControls();
         }
         
         // ========== DEVELOPER SECTION ==========
