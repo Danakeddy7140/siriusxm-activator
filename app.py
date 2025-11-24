@@ -426,8 +426,9 @@ def audio_proxy():
         stream_url = request.args.get('url', '').strip()
         
         # Channel-based stream mapping - UNIQUE AUDIO for each channel
+        # 10 different streams cycle across 100 channels
         channel_streams = {
-            'XM1': 'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
+            'XM1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
             'XM2': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
             'XM3': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
             'XM4': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
