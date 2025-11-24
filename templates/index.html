@@ -2530,11 +2530,23 @@
         // ========== REAL AUDIO STREAMING PLAYER ==========
         let currentChannelIndex = 0;
         let isPlaying = false;
-        let audioElement = document.getElementById('siriusAudio');
+        let audioElement = null;
         let hls = null;
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let channels = [];
         let isLoadingChannels = false;
+        
+        function getAudioElement() {
+            if (!audioElement) {
+                audioElement = document.getElementById('siriusAudio');
+                if (!audioElement) {
+                    audioElement = new Audio();
+                    audioElement.id = 'siriusAudio';
+                    document.body.insertBefore(audioElement, document.body.firstChild);
+                }
+            }
+            return audioElement;
+        }
         
         // Load ALL SiriusXM channels (Satellite + App-Exclusive Xtra)
         function loadRadioStreams() {
@@ -2677,7 +2689,8 @@
             if (!isPlaying) {
                 playCurrentChannel();
             } else {
-                audioElement.pause();
+                const audio = getAudioElement();
+                audio.pause();
                 isPlaying = false;
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.playbackState = 'paused';
@@ -2688,24 +2701,26 @@
         
         function playCurrentChannel() {
             try {
-                if (!audioElement || channels.length === 0) {
+                if (channels.length === 0) {
                     return;
                 }
+                const audio = getAudioElement();
                 const ch = channels[currentChannelIndex];
                 if (!ch) {
                     return;
                 }
                 
-                audioElement.pause();
-                audioElement.currentTime = 0;
-                audioElement.src = '';
+                audio.pause();
+                audio.currentTime = 0;
+                audio.src = '';
+                audio.crossOrigin = 'anonymous';
                 
                 const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
                 
-                audioElement.volume = 1.0;
-                audioElement.src = testUrl;
+                audio.volume = 1.0;
+                audio.src = testUrl;
                 
-                const playPromise = audioElement.play();
+                const playPromise = audio.play();
                 
                 if (playPromise && typeof playPromise.then === 'function') {
                     playPromise.then(() => {
@@ -2719,7 +2734,7 @@
                     isPlaying = true;
                 }
                 
-                audioElement.onerror = function(e) {
+                audio.onerror = function(e) {
                     isPlaying = false;
                 };
                 
@@ -2737,12 +2752,12 @@
                         });
                         
                         navigator.mediaSession.setActionHandler('play', () => {
-                            audioElement.play().catch(() => {});
+                            audio.play().catch(() => {});
                             isPlaying = true;
                             updatePlayButton();
                         });
                         navigator.mediaSession.setActionHandler('pause', () => {
-                            audioElement.pause();
+                            audio.pause();
                             isPlaying = false;
                             updatePlayButton();
                         });
@@ -2844,25 +2859,37 @@
         
         // Update time display and progress from actual audio
         function updateTimeDisplay() {
-            const current = Math.floor(audioElement.currentTime) || 0;
+            const audio = getAudioElement();
+            const current = Math.floor(audio.currentTime) || 0;
             const minutes = Math.floor(current / 60);
             const seconds = current % 60;
             document.getElementById('currentTime').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
         
-        // Update progress bar from audio playback
-        audioElement.addEventListener('timeupdate', updateTimeDisplay);
-        
-        document.addEventListener('DOMContentLoaded', () => {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const audio = getAudioElement();
+                audio.addEventListener('timeupdate', updateTimeDisplay);
+                const volumeControl = document.getElementById('volume');
+                if (volumeControl) {
+                    volumeControl.addEventListener('input', (e) => {
+                        audio.volume = e.target.value / 100;
+                    });
+                    audio.volume = 0.7;
+                }
+            });
+        } else {
+            const audio = getAudioElement();
+            audio.addEventListener('timeupdate', updateTimeDisplay);
             const volumeControl = document.getElementById('volume');
             if (volumeControl) {
                 volumeControl.addEventListener('input', (e) => {
-                    audioElement.volume = e.target.value / 100;
+                    audio.volume = e.target.value / 100;
                 });
-                // Set initial volume
-                audioElement.volume = 0.7;
+                audio.volume = 0.7;
             }
-        });
+        }
         
         // ========== DEVELOPER SECTION ==========
         let devAccessGranted = false;
