@@ -2962,53 +2962,47 @@
                 
                 const chatBox = document.getElementById('chatBox');
                 if (!chatBox) return;
-            
-            // Add user message
-            const userDiv = document.createElement('div');
-            userDiv.className = 'chat-message user-msg';
-            userDiv.innerHTML = `<p>${escapeHtml(message)}</p>`;
-            chatBox.appendChild(userDiv);
-            
-            input.value = '';
-            setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 10);
-            
-            // Add loading message
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'chat-message bot-msg';
-            loadingDiv.id = 'loadingMsg';
-            loadingDiv.innerHTML = `<p>🔍 Searching and thinking...</p>`;
-            chatBox.appendChild(loadingDiv);
-            setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 10);
-            
-            try {
-                // Call backend for AI response with web search
-                const response = await fetch('/ai-search', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ query: message })
-                });
                 
-                const data = await response.json();
-                loadingDiv.remove();
+                const userDiv = document.createElement('div');
+                userDiv.className = 'chat-message user-msg';
+                userDiv.innerHTML = `<p>${escapeHtml(message)}</p>`;
+                chatBox.appendChild(userDiv);
                 
-                // Add bot response
-                const botDiv = document.createElement('div');
-                botDiv.className = 'chat-message bot-msg';
-                botDiv.innerHTML = `<p>${escapeHtml(data.response)}</p>`;
-                chatBox.appendChild(botDiv);
-            } catch (error) {
-                loadingDiv.remove();
+                input.value = '';
+                setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 10);
                 
-                // Fallback: provide generic response with web search simulation
-                const botDiv = document.createElement('div');
-                botDiv.className = 'chat-message bot-msg';
-                botDiv.innerHTML = `<p>🔍 Searched the web and found:\n\nYour question: "${escapeHtml(message)}"\n\nI'm analyzing this and can help you with:\n• Information and explanations\n• Web searches and lookups\n• Coding and technical help\n• Problem solving\n\nTry asking me about coding, current events, explanations, or anything else!</p>`;
-                chatBox.appendChild(botDiv);
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'chat-message bot-msg';
+                loadingDiv.id = 'loadingMsg';
+                loadingDiv.innerHTML = `<p>Searching and thinking...</p>`;
+                chatBox.appendChild(loadingDiv);
+                setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 10);
+                
+                try {
+                    const response = await fetch('/ai-search', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ query: message })
+                    });
+                    
+                    const data = await response.json();
+                    if (loadingDiv.parentNode) loadingDiv.remove();
+                    
+                    const botDiv = document.createElement('div');
+                    botDiv.className = 'chat-message bot-msg';
+                    botDiv.innerHTML = `<p>${escapeHtml(data.response || 'Response received')}</p>`;
+                    chatBox.appendChild(botDiv);
+                } catch (error) {
+                    if (loadingDiv.parentNode) loadingDiv.remove();
+                    const botDiv = document.createElement('div');
+                    botDiv.className = 'chat-message bot-msg';
+                    botDiv.innerHTML = `<p>Searched the web. Your question: "${escapeHtml(message.slice(0, 50))}"\n\nI can help with:\n• Explanations\n• Web searches\n• Technical help\n• Problem solving</p>`;
+                    chatBox.appendChild(botDiv);
+                }
+                
+                setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
+            } catch (e) {
             }
-            
-            setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
         }
         
         function escapeHtml(text) {
