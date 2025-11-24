@@ -2690,6 +2690,12 @@
             const ch = channels[currentChannelIndex];
             console.log('📻 Playing channel:', ch.name, ch.number);
             
+            // CRITICAL: Stop previous audio before loading new one
+            console.log('⏹️ Stopping previous audio...');
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            audioElement.src = '';  // Clear source
+            
             // TEST URL - Known to work
             const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
             
