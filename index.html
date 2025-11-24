@@ -2458,7 +2458,10 @@
                 }
             })
             .catch(e => {
-                resultsDiv.innerHTML = '<div style="text-align: center; padding: 40px; color: #f93fb6;">Error searching music: ' + e.message + '</div>';
+                resultsDiv.innerHTML = `<div style="text-align: center; padding: 40px; color: #f93fb6;">
+                    <p>Error searching music: ${e.message}</p>
+                    <button onclick="searchMusic()" style="margin-top: 20px; padding: 10px 20px; background: #667eea; border: none; color: white; border-radius: 8px; cursor: pointer;">🔄 Try Again</button>
+                </div>`;
             });
         }
         
