@@ -2753,12 +2753,10 @@
                     headers: { 'Accept': 'audio/mpeg' }
                 })
                     .then(response => {
-                        console.log('📡 Fetch response:', response.status, response.statusText, 'URL:', audioUrl);
                         if (!response.ok) throw new Error('HTTP ' + response.status);
                         return response.blob();
                     })
                     .then(blob => {
-                        console.log('✅ Got blob:', blob.type, blob.size, 'bytes');
                         const blobUrl = URL.createObjectURL(blob);
                         const source = audio.querySelector('source');
                         if (source) {
@@ -2766,17 +2764,18 @@
                             source.type = blob.type || 'audio/mpeg';
                         }
                         audio.load();
-                        console.log('🎵 Audio load() called, now playing...');
-                        return audio.play();
+                        const playPromise = audio.play();
+                        if (playPromise && playPromise.catch) {
+                            return playPromise;
+                        }
+                        return Promise.resolve();
                     })
                     .then(() => {
-                        console.log('🎵 Audio playing!');
                         isPlaying = true;
                         updatePlayButton();
                         setupMediaSession(ch.name);
                     })
                     .catch(err => {
-                        console.error('❌ Audio error:', err.message, err);
                         isPlaying = false;
                         updatePlayButton();
                     });
