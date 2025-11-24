@@ -1885,6 +1885,7 @@
                     <li><a href="javascript:navigateTo('home')">Activate</a></li>
                     <li><a href="javascript:navigateTo('radio')">Radio Player</a></li>
                     <li><a href="javascript:navigateTo('legal')">Legal</a></li>
+                    <li><a href="javascript:testAudioWithWebAudioAPI()" style="color: #ff6b6b; opacity: 1; font-size: 14px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 6px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,107,107,0.2)'" onmouseout="this.style.background='transparent'">🔊 Test</a></li>
                     <li><a href="javascript:showDevPassword()" style="color: #667eea; opacity: 1; font-size: 14px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 6px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(102,126,234,0.2)'" onmouseout="this.style.background='transparent'">⚙️ Developer</a></li>
                 </ul>
             </nav>
@@ -2801,6 +2802,29 @@
                     navigator.mediaSession.playbackState = 'playing';
                 } catch (e) {
                 }
+            }
+        }
+        
+        function testAudioWithWebAudioAPI() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) {
+                    console.error('❌ Web Audio API not supported');
+                    return;
+                }
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 440;
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.5);
+                console.log('✅ Web Audio API test: Beep generated!');
+            } catch (e) {
+                console.error('❌ Web Audio test failed:', e.message);
             }
         }
         
