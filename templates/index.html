@@ -1866,7 +1866,7 @@
     </style>
 </head>
 <body>
-    <audio id="siriusAudio" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="siriusAudio" preload="auto" crossorigin="anonymous" controls style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px;"></audio>
     
     <div class="background-orbs">
         <div class="orb orb-1"></div>
@@ -2728,6 +2728,7 @@
                 
                 audio.volume = 1.0;
                 audio.src = audioUrl;
+                audio.load();
                 
                 const playPromise = audio.play();
                 
