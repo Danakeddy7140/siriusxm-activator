@@ -2685,43 +2685,12 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Real working public radio streams - proxied through backend
-            const streamUrls = {
-                'XM 2': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 3': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 5': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 6': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 7': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 8': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 9': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 10': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 11': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 13': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 14': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 15': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 16': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 20': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 34': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 42': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 44': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 45': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 48': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 51': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 53': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 58': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 60': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 65': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 69': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 70': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 71': 'https://listen.radionomy.com/radiomary.m3u',
-                'XM 73': 'https://listen.radionomy.com/radiomary.m3u'
-            };
-            
-            const streamUrl = streamUrls[ch.number] || 'https://listen.radionomy.com/radiomary.m3u';
-            const proxyUrl = `/stream-proxy?url=${encodeURIComponent(streamUrl)}`;
+            // Test with verified working MP3 URL - confirms system works
+            // For real SiriusXM: user must provide stream URLs in the developer section
+            const testStreamUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
             
             audioElement.volume = 1.0;
-            audioElement.src = proxyUrl;
+            audioElement.src = testStreamUrl;
             audioElement.crossOrigin = 'anonymous';
             
             // Play with error handling
