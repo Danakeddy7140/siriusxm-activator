@@ -2685,39 +2685,40 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // SiriusXM-style radio streams - converted to MP3 via FFmpeg on backend
+            // REAL 181.FM streams - continuous MP3 via FFmpeg converter
+            // Format: http://listen.181fm.com/181-[channelname]_128k.mp3
             const streamUrls = {
-                'XM 2': 'http://listen.181fm.com:8000/trance',
-                'XM 3': 'http://listen.181fm.com:8000/house',
-                'XM 5': 'http://listen.181fm.com:8000/chillout',
-                'XM 6': 'http://listen.181fm.com:8000/classic_rock',
-                'XM 7': 'http://listen.181fm.com:8000/70s_rock',
-                'XM 8': 'http://listen.181fm.com:8000/80s_rock',
-                'XM 9': 'http://listen.181fm.com:8000/90s_hits',
-                'XM 10': 'http://listen.181fm.com:8000/pop',
-                'XM 11': 'http://listen.181fm.com:8000/alternative',
-                'XM 13': 'http://listen.181fm.com:8000/dance',
-                'XM 14': 'http://listen.181fm.com:8000/progressive_rock',
-                'XM 15': 'http://listen.181fm.com:8000/hard_rock',
-                'XM 16': 'http://listen.181fm.com:8000/smooth_jazz',
-                'XM 20': 'http://listen.181fm.com:8000/heavy_metal',
-                'XM 34': 'http://listen.181fm.com:8000/indie_alternative',
-                'XM 42': 'http://listen.181fm.com:8000/classic_rock',
-                'XM 44': 'http://listen.181fm.com:8000/hip_hop',
-                'XM 45': 'http://listen.181fm.com:8000/urban',
-                'XM 48': 'http://listen.181fm.com:8000/rnb',
-                'XM 51': 'http://listen.181fm.com:8000/edm',
-                'XM 53': 'http://listen.181fm.com:8000/electronic',
-                'XM 58': 'http://listen.181fm.com:8000/country',
-                'XM 60': 'http://listen.181fm.com:8000/bluegrass',
-                'XM 65': 'http://listen.181fm.com:8000/gospel',
-                'XM 69': 'http://listen.181fm.com:8000/alternative',
-                'XM 70': 'http://listen.181fm.com:8000/chillout',
-                'XM 71': 'http://listen.181fm.com:8000/rnb_soul',
-                'XM 73': 'http://listen.181fm.com:8000/jazz'
+                'XM 2': 'http://listen.181fm.com/181-trance_128k.mp3',
+                'XM 3': 'http://listen.181fm.com/181-house_128k.mp3',
+                'XM 5': 'http://listen.181fm.com/181-chillout_128k.mp3',
+                'XM 6': 'http://listen.181fm.com/181-rock_128k.mp3',
+                'XM 7': 'http://listen.181fm.com/181-70srock_128k.mp3',
+                'XM 8': 'http://listen.181fm.com/181-80srock_128k.mp3',
+                'XM 9': 'http://listen.181fm.com/181-90srock_128k.mp3',
+                'XM 10': 'http://listen.181fm.com/181-pop_128k.mp3',
+                'XM 11': 'http://listen.181fm.com/181-alternative_128k.mp3',
+                'XM 13': 'http://listen.181fm.com/181-dance_128k.mp3',
+                'XM 14': 'http://listen.181fm.com/181-rock_128k.mp3',
+                'XM 15': 'http://listen.181fm.com/181-rock_128k.mp3',
+                'XM 16': 'http://listen.181fm.com/181-jazz_128k.mp3',
+                'XM 20': 'http://listen.181fm.com/181-metal_128k.mp3',
+                'XM 34': 'http://listen.181fm.com/181-alternative_128k.mp3',
+                'XM 42': 'http://listen.181fm.com/181-classicrock_128k.mp3',
+                'XM 44': 'http://listen.181fm.com/181-hiphop_128k.mp3',
+                'XM 45': 'http://listen.181fm.com/181-urban_128k.mp3',
+                'XM 48': 'http://listen.181fm.com/181-rnb_128k.mp3',
+                'XM 51': 'http://listen.181fm.com/181-edm_128k.mp3',
+                'XM 53': 'http://listen.181fm.com/181-electronic_128k.mp3',
+                'XM 58': 'http://listen.181fm.com/181-country_128k.mp3',
+                'XM 60': 'http://listen.181fm.com/181-country_128k.mp3',
+                'XM 65': 'http://listen.181fm.com/181-gospel_128k.mp3',
+                'XM 69': 'http://listen.181fm.com/181-alternative_128k.mp3',
+                'XM 70': 'http://listen.181fm.com/181-chillout_128k.mp3',
+                'XM 71': 'http://listen.181fm.com/181-rnb_128k.mp3',
+                'XM 73': 'http://listen.181fm.com/181-jazz_128k.mp3'
             };
             
-            const streamUrl = streamUrls[ch.number] || 'http://listen.181fm.com:8000/trance';
+            const streamUrl = streamUrls[ch.number] || 'http://listen.181fm.com/181-trance_128k.mp3';
             const convertUrl = `/stream-convert?url=${encodeURIComponent(streamUrl)}`;
             
             audioElement.volume = 1.0;
