@@ -2683,9 +2683,9 @@
             if (channels.length === 0) return;
             const ch = channels[currentChannelIndex];
             
-            // Radio streams - using working public stations
+            // Radio streams - TEST VERSION
             const streamUrls = {
-                'XM 2': 'https://stream.radiotunes.com/hits',
+                'XM 2': '/audio-proxy?url=https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
                 'XM 3': 'https://stream.radiotunes.com/popnow',
                 'XM 5': 'https://stream.radiotunes.com/country',
                 'XM 6': 'https://stream.radiotunes.com/poprock',
@@ -2715,7 +2715,7 @@
                 'XM 73': 'https://stream.radiotunes.com/jazz'
             };
             
-            const streamUrl = streamUrls[ch.number] || 'https://stream.radiotunes.com/hits';
+            const streamUrl = streamUrls[ch.number] || '/audio-proxy?url=https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
             
             audioElement.volume = 1.0;
             audioElement.src = streamUrl;
