@@ -422,7 +422,31 @@ def save_code():
 def audio_proxy():
     """Proxy audio streams - bypass CORS and content issues"""
     try:
+        channel = request.args.get('channel', '')
         stream_url = request.args.get('url', '').strip()
+        
+        # Channel-based stream mapping for unique audio
+        channel_streams = {
+            'XM1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'XM2': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            'XM3': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+            'XM4': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+            'XM5': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+            'XM6': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+            'XM7': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+            'XM8': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+            'XM9': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+            'XM10': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+            'XM11': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'XM12': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        }
+        
+        # Use channel-mapped URL if available, cycle through 1-10
+        if channel:
+            channel_num = int(''.join(filter(str.isdigit, channel))) if any(c.isdigit() for c in channel) else 1
+            cycle_num = ((channel_num - 1) % 10) + 1
+            stream_url = channel_streams.get(f'XM{cycle_num}', channel_streams.get('XM1'))
+        
         if not stream_url or not (stream_url.startswith('http://') or stream_url.startswith('https://')):
             return jsonify({'error': 'Invalid URL'}), 400
         
