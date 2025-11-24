@@ -394,13 +394,13 @@ def save_code():
 
 @app.route('/audio-proxy')
 def audio_proxy():
-    """Proxy audio streams to bypass HTTPS/HTTP mixed content issues on GitHub Pages"""
+    """Proxy audio streams - bypass CORS and content issues"""
     try:
         stream_url = request.args.get('url', '').strip()
-        if not stream_url or not stream_url.startswith('http://listen.181fm.com'):
+        if not stream_url:
             return 'Invalid URL', 400
         
-        response = requests.get(stream_url, stream=True, timeout=30)
+        response = requests.get(stream_url, stream=True, timeout=30, headers={'User-Agent': 'Mozilla/5.0'})
         
         def generate():
             for chunk in response.iter_content(chunk_size=8192):
@@ -410,9 +410,10 @@ def audio_proxy():
         return generate(), 200, {
             'Content-Type': 'audio/mpeg',
             'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'no-cache'
+            'Cache-Control': 'no-cache',
+            'Accept-Ranges': 'bytes'
         }
-    except:
+    except Exception as e:
         return '', 500
 
 @app.route('/activate', methods=['POST'])
