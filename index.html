@@ -2723,7 +2723,8 @@
             };
             
             const streamUrl = streamUrls[ch.number] || testUrl;
-            const convertUrl = `/stream-convert?url=${encodeURIComponent(streamUrl)}`;
+            // For now: Load MP3 directly without FFmpeg conversion for testing
+            // This will tell us if the audio player works
             
             // Remove old listeners
             audioElement.onloadstart = null;
@@ -2743,12 +2744,13 @@
             
             // Add play listener
             audioElement.onplay = function() {
+                console.log('Audio started playing!');
                 isPlaying = true;
                 updatePlayButton();
             };
             
-            // NOW set the source - this starts loading
-            audioElement.src = convertUrl;
+            // Test: Load URL directly (no FFmpeg conversion for now)
+            audioElement.src = streamUrl;
             
             // Attempt to play - will start when data loads
             const playPromise = audioElement.play();
