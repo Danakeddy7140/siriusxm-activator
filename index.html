@@ -2715,10 +2715,15 @@
                 audio.src = '';
                 audio.crossOrigin = 'anonymous';
                 
-                const testUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                let audioUrl;
+                if (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit')) {
+                    audioUrl = '/audio-proxy?url=' + encodeURIComponent('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+                } else {
+                    audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                }
                 
                 audio.volume = 1.0;
-                audio.src = testUrl;
+                audio.src = audioUrl;
                 
                 const playPromise = audio.play();
                 
