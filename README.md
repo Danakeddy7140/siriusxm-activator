@@ -1,1 +1,0 @@
-# siriusxm-activator
